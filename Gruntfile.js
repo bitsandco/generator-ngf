@@ -16,4 +16,59 @@
 (function () {
   'use strict';
   
+  module.exports = function (grunt) {
+    
+    // Setup for grunt
+    require('load-grunt-tasks')(grunt);
+    require('time-grunt')(grunt);
+    
+    grunt.initConfig({
+      watch: {
+        js: {
+          files: '<%= jshint.all.src %>',
+          tasks: ['newer:jshint:all']
+        },
+        jsTest: {
+          files: '<%= jshint.test.src %>',
+          tasks: ['newer:jshint:test', 'mochaTest']
+        }
+      },
+      
+      jshint: {
+        options: {
+          jshintrc: '.jshintrc'
+        },
+        all: {
+          src: [
+            'Gruntfile.js',
+            'generators/**/*.js'
+          ]
+        },
+        test: {
+          options: {
+            jshintrc: 'test/.jshintrc'
+          },
+          src: ['generators/**/*.spec.js']
+        }
+      },
+      
+      mochaTest: {
+        test : {
+          src: '<%= jshint.test.src %>',
+          options: {
+            reporter: 'spec'
+          }
+        }
+      }
+    });
+    
+    grunt.registerTask('test', [
+      'jshint',
+      'mochaTest'
+    ]);
+    
+    grunt.registerTask('default', [
+      'watch'
+    ]);
+  };
 }());

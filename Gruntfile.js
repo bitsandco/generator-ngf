@@ -41,7 +41,9 @@
         all: {
           src: [
             'Gruntfile.js',
-            'generators/**/*.js'
+            'generators/**/*.js',
+            '!<%= jshint.test.src %>',
+            '!**/templates/**.js'
           ]
         },
         test: {

@@ -61,6 +61,12 @@
             reporter: 'spec'
           }
         }
+      },
+      
+      coveralls: {
+        test: {
+          src: 'coverage/lcov.info'
+        }
       }
     });
     

@@ -23,9 +23,11 @@
   },
   "devDependencies": {
     "chai": "^1.10.0",
+    "coveralls": "^2.11.2",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-coveralls": "^1.0.0",
     "grunt-mocha-test": "^0.12.4",
     "grunt-newer": "^0.8.0",
     "load-grunt-tasks": "^1.0.0",
@@ -38,6 +40,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "ci": "istanbul cover -- grunt test && grunt coveralls:test"
   }
 }

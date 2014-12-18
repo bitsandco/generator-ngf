@@ -1,2 +1,5 @@
 language: node_js
 before_install: npm install -g grunt-cli
+notifications:
+  slack:
+    secure: idIOAyWoFVZA7dbG0Y2Y2bLRbx+8bzd998zCf9xiRQOx8p4LoS2YHEv3wWH6gg0S4Pc83pAc0C+Zr3eVEC9tSPph/3vMR7Ya6nSOv0yjX2Zh3DlTQfw7p9jNUU2r9zBOjfJrjKVkFls1X+oejwmM3aFQX4yuT1NVxSDxiVc8tc8=

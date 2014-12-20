@@ -17,33 +17,35 @@
   'use strict';
   
   var
-    NamedGenerator = require('../../util/NamedGenerator.js'),
-    path = require('path');
+    fs = require('fs'),
+    program = require('ast-query');
   
-  module.exports = NamedGenerator.extend({
-    constructor: function () {
-      NamedGenerator.apply(this, arguments);
-      
-      this._formatName('-module');
-    },
-          
-    writing: function () {
-      this.fs.copyTpl(
-        this.templatePath('module.js'),
-        path.join(this.module.path, this.name, this.name + '.module.js'), {
-          name: this._getModuleName(this.name)
-        }
-      );
-    },
+  exports.findModules = function (filename) {
+    var
+      argumentList,
+      expression,
+      expressions,
+      i,
+      l,
+      modules = [],
+      tree;
+  
+    if (fs.existsSync(filename)) {
+      tree = program(fs.readFileSync(filename));
+      expressions = tree.callExpression('angular.module');
     
-    _getModuleName: function (module) {
-      module = module || this.name;
-  
-      if (this.module.name !== '') {
-        module = this.module.name + '.' + module;
+      for (i = 0, l = expressions.length; i < l; i += 1) {
+        expression = expressions.nodes[i];
+        argumentList = expression.arguments;
+        
+        if (argumentList.length > 1 && argumentList[0].type === 'Literal') {
+          modules.push({ name: argumentList[0].value });
+        }
       }
       
-      return module;
+      return modules;
+    } else {
+      return null;
     }
-  });
+  };
 }());

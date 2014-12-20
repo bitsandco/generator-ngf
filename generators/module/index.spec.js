@@ -33,14 +33,14 @@
   describe('ng:module', function() {
     
     it('should use the module name provided as argument' +
-    ', stripping \'module\' at the end', function(done) {
+      ', stripping \'module\' at the end', function(done) {
       var context = runContext();
       
       context
         .withArguments(['mySuperModule'])
         .on('ready', function (generator) {
-          generator.name.should.equal(_.slugify(_.humanize('mySuper')));
-          expect(generator.parent).to.not.exist();
+          expect(generator.name).to.equal(_.slugify(_.humanize('mySuper')));
+          expect(generator.module.name).to.equal('');
           done();
         });
     });
@@ -51,14 +51,14 @@
       context
         .withArguments(['mySuperMod'])
         .on('ready', function (generator) {
-          generator.name.should.equal(_.slugify(_.humanize('mySuperMod')));
-          expect(generator.parent).to.not.exist();
+          expect(generator.name).to.equal(_.slugify(_.humanize('mySuperMod')));
+          expect(generator.module.name).to.equal('');
           done();
         });
     });
     
     it('should accept an optional argument ' +
-    'for the parent module', function(done) {
+      'for the parent module', function(done) {
       var context = runContext('template');
     
       context
@@ -71,9 +71,42 @@
           subContext
             .withArguments(['mySuperSubModule', 'my-super'])
             .on('ready', function (generator) {
-              generator.name.should.exist();
-              generator.parent.should.equal('my-super');
+              expect(generator.name).to.exist();
+              expect(generator.module.name).to.equal('my-super');
               done();
+            });
+        });
+    });
+    
+    it('should accept an optional argument for the parent module as ' +
+      'a doted path', function(done) {
+      var context = runContext('template');
+  
+      context
+        .withArguments(['mySuperModule'])
+        .on('end', function () {
+          var subContext = runContext('template2', function (dir) {
+            fs.copySync(path.join(dir, '../template'), dir);
+          });
+        
+          subContext
+            .withArguments(['mySuperSubModule', 'my-super'])
+            .on('end', function () {
+              var subSubContext = runContext(undefined, function (dir) {
+                fs.copySync(path.join(dir, '../template2'), dir);
+              });
+              
+              subSubContext
+                .withArguments([
+                  'mySuperSubSubModule',
+                  'my-super.my-super-sub'
+                ])
+                .on('ready', function (generator) {
+                  expect(generator.name).to.exist();
+                  expect(generator.module.name)
+                    .to.equal('my-super.my-super-sub');
+                  done();
+                });
             });
         });
     });
@@ -127,30 +160,30 @@
         file;
   
       context
-      .withArguments(['mySuperModule'])
-      .on('end', function () {
-        var subContext = runContext(undefined, function (dir) {
-          fs.copySync(path.join(dir, '../template'), dir);
-        });
-        
-        subContext
-        .withArguments(['mySuperSubModule', 'my-super'])
-        .withOptions({ dir: 'somedir' })
-        .on('ready', function (generator) {
-          file = path.join(
-            generator.name, 
-            generator.name + '.module.js'
-          );
-        })
+        .withArguments(['mySuperModule'])
         .on('end', function () {
-          assert.file([path.join(
-            __dirname,
-            '../../test/tmp/context/somedir',
-            file
-          )]);
-          done();
+          var subContext = runContext(undefined, function (dir) {
+            fs.copySync(path.join(dir, '../template'), dir);
+          });
+        
+          subContext
+            .withArguments(['mySuperSubModule', 'my-super'])
+            .withOptions({ dir: 'somedir' })
+            .on('ready', function (generator) {
+              file = path.join(
+                generator.name, 
+                generator.name + '.module.js'
+              );
+            })
+            .on('end', function () {
+              assert.file([path.join(
+                __dirname,
+                '../../test/tmp/context/somedir',
+                file
+              )]);
+              done();
+            });
         });
-      });
     });
   
     function runContext(dir, setup) {

@@ -16,12 +16,78 @@
 (function () {
   'use strict';
 
-  var Generator = require('./Generator.js');
+  var
+    fs = require('fs'),
+    Generator = require('./Generator.js'),
+    path = require('path'),
+    util = require('./');
     
   module.exports = Generator.extend({
     constructor: function () {
+      var generator = this;
+      
       Generator.apply(this, arguments);
+      
       this.argument('name', { type: String, required: true });
+      
+      this.argument('module', { type: String, required: false });
+      if (typeof this.module === 'string') {
+        parseModule();
+      } else {
+        this.module = {
+          name: '',
+          path: this.options.dir || this.destinationRoot()
+        };
+      }
+      
+      function parseModule() {
+        var
+          filename = getModuleFilename(generator.module),
+          i,
+          l,
+          module,
+          moduleName = path.basename(generator.module),
+          modules;
+        
+        if (!fs.existsSync(filename)) {
+          filename = generator.module.replace(/\./g, path.sep);
+          filename = getModuleFilename(filename);
+          moduleName = generator.module;
+          
+          if (!fs.existsSync(filename)) {
+            throw new Error('Could not find module ' + generator.module);
+          }
+        }
+        
+        modules = util.module.findModules(filename);
+        
+        for (i = 0, l = modules.length; i < l; i += 1) {
+          if (modules[i].name === moduleName) {
+            module = {
+              name: modules[i].name,
+              path: generator.options.dir || path.dirname(filename)
+            };
+          }
+        }
+        
+        if (module === undefined) {
+          throw new Error('Could not find module ' + generator.module);
+        } else {
+          generator.module = module;
+        }
+        
+        function getModuleFilename (moduleRoot) {
+          return path.join(
+            generator.destinationRoot(),
+            moduleRoot,
+            path.basename(moduleRoot) + '.module.js'
+          );
+        }
+      }
+    },
+    
+    _formatName: function (suffix) {
+      this.name = util.format(this.name, suffix);
     }
   });
 }());

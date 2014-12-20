@@ -16,34 +16,6 @@
 (function () {
   'use strict';
   
-  var
-    NamedGenerator = require('../../util/NamedGenerator.js'),
-    path = require('path');
-  
-  module.exports = NamedGenerator.extend({
-    constructor: function () {
-      NamedGenerator.apply(this, arguments);
-      
-      this._formatName('-module');
-    },
-          
-    writing: function () {
-      this.fs.copyTpl(
-        this.templatePath('module.js'),
-        path.join(this.module.path, this.name, this.name + '.module.js'), {
-          name: this._getModuleName(this.name)
-        }
-      );
-    },
-    
-    _getModuleName: function (module) {
-      module = module || this.name;
-  
-      if (this.module.name !== '') {
-        module = this.module.name + '.' + module;
-      }
-      
-      return module;
-    }
-  });
+  exports.format = require('./format.js');
+  exports.module = require('./module.js');
 }());

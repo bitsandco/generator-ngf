@@ -16,34 +16,16 @@
 (function () {
   'use strict';
   
-  var
-    NamedGenerator = require('../../util/NamedGenerator.js'),
-    path = require('path');
+  var _ = require('underscore.string');
   
-  module.exports = NamedGenerator.extend({
-    constructor: function () {
-      NamedGenerator.apply(this, arguments);
-      
-      this._formatName('-module');
-    },
-          
-    writing: function () {
-      this.fs.copyTpl(
-        this.templatePath('module.js'),
-        path.join(this.module.path, this.name, this.name + '.module.js'), {
-          name: this._getModuleName(this.name)
-        }
-      );
-    },
+  module.exports = function (name, ending) {
+    ending = ending || '';
+    name = _.slugify(_.humanize(name));
     
-    _getModuleName: function (module) {
-      module = module || this.name;
-  
-      if (this.module.name !== '') {
-        module = this.module.name + '.' + module;
-      }
-      
-      return module;
+    if (_.endsWith(name, ending)) {
+      name = name.slice(0, -ending.length);
     }
-  });
+    
+    return name;
+  };
 }());

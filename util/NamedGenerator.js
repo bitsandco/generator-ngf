@@ -16,27 +16,12 @@
 (function () {
   'use strict';
 
-  var
-    Generator = require('../../util/Generator.js'),
-    path = require('path');
+  var Generator = require('./Generator.js');
     
   module.exports = Generator.extend({
     constructor: function () {
       Generator.apply(this, arguments);
-      
-      this.argument('name', { type: String, required: false });
-      if (typeof this.name !== 'string') {
-        this.arguments.unshift('app');
-      }
-      
-      this.composeWith('module', {
-        args: this.arguments, options: this.options
-      }, {
-        local: path.join(__dirname, '../module')
-      });
-    },
-    
-    writing: function () {
+      this.argument('name', { type: String, required: true });
     }
   });
 }());

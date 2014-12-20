@@ -16,27 +16,12 @@
 (function () {
   'use strict';
 
-  var
-    Generator = require('../../util/Generator.js'),
-    path = require('path');
+  var generators = require('yeoman-generator');
     
-  module.exports = Generator.extend({
+  module.exports = generators.Base.extend({
     constructor: function () {
-      Generator.apply(this, arguments);
-      
-      this.argument('name', { type: String, required: false });
-      if (typeof this.name !== 'string') {
-        this.arguments.unshift('app');
-      }
-      
-      this.composeWith('module', {
-        args: this.arguments, options: this.options
-      }, {
-        local: path.join(__dirname, '../module')
-      });
-    },
-    
-    writing: function () {
+      generators.Base.apply(this, arguments);
+      this.option('dir', { type: String });
     }
   });
 }());

@@ -18,11 +18,14 @@
   
   var
     _ = require('underscore.string'),
+    blackhole = require('blackhole'),
     chai = require('chai'),
+    fs = require('fs-extra'),
     path = require('path'),
     yeoman = require('yeoman-generator'),
     
     assert = yeoman.assert,
+    expect = chai.expect,
     helpers = yeoman.test;
   
   chai.should();
@@ -37,6 +40,7 @@
         .withArguments(['mySuperModule'])
         .on('ready', function (generator) {
           generator.name.should.equal(_.slugify(_.humanize('mySuper')));
+          expect(generator.parent).to.not.exist();
           done();
         });
     });
@@ -48,10 +52,32 @@
         .withArguments(['mySuperMod'])
         .on('ready', function (generator) {
           generator.name.should.equal(_.slugify(_.humanize('mySuperMod')));
+          expect(generator.parent).to.not.exist();
           done();
         });
     });
-      
+    
+    it('should accept an optional argument ' +
+      'for the parent module', function(done) {
+      var context = runContext('template');
+    
+      context
+        .withArguments(['mySuperModule'])
+        .on('end', function () {
+          var subContext = runContext(undefined, function (dir) {
+            fs.copySync(path.join(dir, '../template'), dir);
+          });
+          
+          subContext
+            .withArguments(['mySuperSubModule', 'my-super'])
+            .on('ready', function (generator) {
+              generator.name.should.exist();
+              generator.parent.should.equal('my-super');
+              done();
+            });
+        });
+    });
+    
     it('should generate a module file', function(done) {
       var
         context = runContext(),
@@ -66,15 +92,18 @@
           );
         })
         .on('end', function () {
-          assert.file([path.join(__dirname, '../../test/tmp', file)]);
+          assert.file([path.join(__dirname, '../../test/tmp/context', file)]);
           done();
         });
     });
       
-    function runContext() {
+    function runContext(dir, setup) {
+      dir = dir || 'context';
+      setup = setup || blackhole;
+      
       return helpers
         .run(__dirname)
-        .inDir(path.join(__dirname, '../../test/tmp'));
+        .inDir(path.join(__dirname, '../../test/tmp', dir), setup);
     }
   });
 }());

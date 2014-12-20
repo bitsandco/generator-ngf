@@ -17,32 +17,108 @@
   'use strict';
   
   var
+    fs = require('fs'),
     generators = require('yeoman-generator'),
-    path = require('path');
+    path = require('path'),
+    program = require('ast-query');
   
   module.exports = generators.NamedBase.extend({
     constructor: function () {
-      var name;
+      var generator = this;
       
       generators.NamedBase.apply(this, arguments);
       
-      name = this._.slugify(this._.humanize(this.name));
-      if (this._.endsWith(name, '-module')) {
-        name = name.slice(0, -7);
+      parseName();
+      
+      this.argument('parent', { type: String, required: false });
+      if (typeof this.parent === 'string') {
+        this.dir = this.parent;
+        parseParent();
       }
-      this.name = name;
+      
+      function parseName() {
+        var name;
+        
+        name = generator._.slugify(generator._.humanize(generator.name));
+        if (generator._.endsWith(name, '-module')) {
+          name = name.slice(0, -7);
+        }
+        generator.name = name;
+      }
+      
+      function parseParent() {
+        var
+          argumentList,
+          expression,
+          expressions,
+          i,
+          l,
+          parent,
+          tree;
+        
+        parent = path.join(
+          generator.destinationRoot(),
+          generator.parent,
+          generator._getModuleFileName(path.basename(generator.parent))
+        );
+        
+        if (fs.existsSync(parent)) {
+          tree = program(fs.readFileSync(parent));
+          expressions = tree.callExpression('angular.module');
+          
+          for (i = 0, l = expressions.length; i < l; i += 1) {
+            expression = expressions.nodes[i];
+            argumentList = expression.arguments;
+            if (argumentList.length > 1 &&
+              argumentList[0].type === 'Literal' &&
+              generator._.endsWith(
+                argumentList[0].value,
+                path.basename(generator.parent)
+              )) {
+                generator.parent = argumentList[0].value;
+                break;
+              }
+          }
+        } else {
+          throw new Error('Could not find the parent module (' +
+            parent +')');
+        }
+      }
     },
           
     writing: function () {
       this.fs.copyTpl(
         this.templatePath('module.js'),
         this.destinationPath(path.join(
-          this.name,
-          this.name + '.module.js'
+          this._getModuleDirectory(),
+          this._getModuleFileName()
         )), {
-          name: this.name
+          name: this._getModuleName()
         }
       );
+    },
+    
+    _getModuleFileName: function (module) {
+      module = module || this.name;
+      return module + '.module.js';
+    },
+    
+    _getModuleDirectory: function (module) {
+      var directory = this.dir || '';
+      
+      module = module || this.name;
+      
+      return path.join(directory, module);
+    },
+    
+    _getModuleName: function (module) {
+      module = module || this.name;
+      
+      if (typeof this.parent === 'string') {
+        module = this.parent + '.' + module;
+      }
+      
+      return module;
     }
   });
 }());

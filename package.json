@@ -19,11 +19,14 @@
   },
   "homepage": "https://github.com/bitsandco/generator-ng",
   "dependencies": {
+    "ast-query": "^0.3.0",
     "yeoman-generator": "^0.18.1"
   },
   "devDependencies": {
+    "blackhole": "^1.0.2",
     "chai": "^1.10.0",
     "coveralls": "^2.11.2",
+    "fs-extra": "^0.13.0",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",

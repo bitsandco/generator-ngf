@@ -18,15 +18,15 @@
   
   var
     fs = require('fs'),
-    generators = require('yeoman-generator'),
+    NamedGenerator = require('../../util/NamedGenerator.js'),
     path = require('path'),
     program = require('ast-query');
   
-  module.exports = generators.NamedBase.extend({
+  module.exports = NamedGenerator.extend({
     constructor: function () {
       var generator = this;
       
-      generators.NamedBase.apply(this, arguments);
+      NamedGenerator.apply(this, arguments);
       
       parseName();
       
@@ -104,7 +104,7 @@
     },
     
     _getModuleDirectory: function (module) {
-      var directory = this.dir || '';
+      var directory = this.options.dir || this.dir || '';
       
       module = module || this.name;
       

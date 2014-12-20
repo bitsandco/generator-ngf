@@ -33,7 +33,7 @@
   describe('ng:module', function() {
     
     it('should use the module name provided as argument' +
-      ', stripping \'module\' at the end', function(done) {
+    ', stripping \'module\' at the end', function(done) {
       var context = runContext();
       
       context
@@ -58,7 +58,7 @@
     });
     
     it('should accept an optional argument ' +
-      'for the parent module', function(done) {
+    'for the parent module', function(done) {
       var context = runContext('template');
     
       context
@@ -96,7 +96,63 @@
           done();
         });
     });
+    
+    it('should generate a module in a specified directory', function(done) {
+      var
+        context = runContext(),
+        file;
       
+      context
+        .withArguments(['mySuperModule'])
+        .withOptions({ dir: 'somedir' }) 
+        .on('ready', function (generator) {
+          file = path.join(
+            generator.name, 
+            generator.name + '.module.js'
+          );
+        })
+        .on('end', function () {
+          assert.file([path.join(
+            __dirname,
+            '../../test/tmp/context/somedir',
+            file
+          )]);
+          done();
+        });
+    });
+    
+    it('should generate a submodule in a specified directory', function(done) {
+      var
+        context = runContext('template'),
+        file;
+  
+      context
+      .withArguments(['mySuperModule'])
+      .on('end', function () {
+        var subContext = runContext(undefined, function (dir) {
+          fs.copySync(path.join(dir, '../template'), dir);
+        });
+        
+        subContext
+        .withArguments(['mySuperSubModule', 'my-super'])
+        .withOptions({ dir: 'somedir' })
+        .on('ready', function (generator) {
+          file = path.join(
+            generator.name, 
+            generator.name + '.module.js'
+          );
+        })
+        .on('end', function () {
+          assert.file([path.join(
+            __dirname,
+            '../../test/tmp/context/somedir',
+            file
+          )]);
+          done();
+        });
+      });
+    });
+  
     function runContext(dir, setup) {
       dir = dir || 'context';
       setup = setup || blackhole;

@@ -33,7 +33,6 @@
       var context = runContext();
       
       context
-        .withArguments(['app'])
         .on('end', function () {
           assert.file([path.join(
             __dirname,

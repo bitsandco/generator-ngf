@@ -42,6 +42,7 @@
           src: [
             'Gruntfile.js',
             'generators/**/*.js',
+            'util/**/*.js',
             '!<%= jshint.test.src %>',
             '!**/templates/**.js'
           ]

@@ -43,7 +43,7 @@
             'Gruntfile.js',
             'generators/**/*.js',
             'util/**/*.js',
-            '!<%= jshint.test.src %>',
+            '!**/*.spec.js',
             '!**/templates/**.js'
           ]
         },
@@ -51,7 +51,10 @@
           options: {
             jshintrc: 'test/.jshintrc'
           },
-          src: ['generators/**/*.spec.js']
+          src: [
+            'generators/**/*.spec.js',
+            'util/**/*.spec.js'
+          ]
         }
       },
       

@@ -24,26 +24,17 @@
     constructor: function () {
       NamedGenerator.apply(this, arguments);
       
-      this._formatName(['-module', '-mod']);
+      this._formatName(['-controller', '-ctrl']);
     },
           
     writing: function () {
       this.fs.copyTpl(
-        this.templatePath('module.js'),
-        path.join(this.module.path, this.name, this.name + '.module.js'), {
-          name: this._getModuleName(this.name)
+        this.templatePath('controller.js'),
+        path.join(this.module.path, this.name + '.controller.js'), {
+          module: this.module.name,
+          name: this._.classify(this.name)
         }
       );
-    },
-    
-    _getModuleName: function (module) {
-      module = module || this.name;
-  
-      if (this.module.name !== '') {
-        module = this.module.name + '.' + module;
-      }
-      
-      return module;
     }
   });
 }());

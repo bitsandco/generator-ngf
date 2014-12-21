@@ -17,9 +17,9 @@
   'use strict';
   
   var
-    _ = require('underscore.string'),
     blackhole = require('blackhole'),
     chai = require('chai'),
+    format = require('../../util/format.js'),
     fs = require('fs-extra'),
     path = require('path'),
     yeoman = require('yeoman-generator'),
@@ -34,27 +34,16 @@
     
     it('should use the module name provided as argument' +
       ', stripping \'module\' at the end', function(done) {
-      var context = runContext();
-      
-      context
-        .withArguments(['mySuperModule'])
-        .on('ready', function (generator) {
-          expect(generator.name).to.equal(_.slugify(_.humanize('mySuper')));
-          expect(generator.module.name).to.equal('');
-          done();
-        });
+      checkNaming('myApp', 'Module', done);
     });
     
+    it('should use the module name provided as argument' +
+      ', stripping \'mod\' at the end', function(done) {
+      checkNaming('my-app_', 'mod', done);
+    });
+  
     it('should use the module name provided as argument', function(done) {
-      var context = runContext();
-    
-      context
-        .withArguments(['mySuperMod'])
-        .on('ready', function (generator) {
-          expect(generator.name).to.equal(_.slugify(_.humanize('mySuperMod')));
-          expect(generator.module.name).to.equal('');
-          done();
-        });
+      checkNaming('myApp', '', done);
     });
     
     it('should accept an optional argument ' +
@@ -62,17 +51,17 @@
       var context = runContext('template');
     
       context
-        .withArguments(['mySuperModule'])
+        .withArguments(['myApp'])
         .on('end', function () {
           var subContext = runContext(undefined, function (dir) {
             fs.copySync(path.join(dir, '../template'), dir);
           });
           
           subContext
-            .withArguments(['mySuperSubModule', 'my-super'])
+            .withArguments(['mySubAppModule', 'my-app'])
             .on('ready', function (generator) {
               expect(generator.name).to.exist();
-              expect(generator.module.name).to.equal('my-super');
+              expect(generator.module.name).to.equal('my-app');
               done();
             });
         });
@@ -83,14 +72,14 @@
       var context = runContext('template');
   
       context
-        .withArguments(['mySuperModule'])
+        .withArguments(['myApp'])
         .on('end', function () {
           var subContext = runContext('template2', function (dir) {
             fs.copySync(path.join(dir, '../template'), dir);
           });
         
           subContext
-            .withArguments(['mySuperSubModule', 'my-super'])
+            .withArguments(['mySubAppModule', 'my-app'])
             .on('end', function () {
               var subSubContext = runContext(undefined, function (dir) {
                 fs.copySync(path.join(dir, '../template2'), dir);
@@ -98,13 +87,13 @@
               
               subSubContext
                 .withArguments([
-                  'mySuperSubSubModule',
-                  'my-super.my-super-sub'
+                  'mySubSubAppModule',
+                  'my-app.my-sub-app'
                 ])
                 .on('ready', function (generator) {
                   expect(generator.name).to.exist();
                   expect(generator.module.name)
-                    .to.equal('my-super.my-super-sub');
+                    .to.equal('my-app.my-sub-app');
                   done();
                 });
             });
@@ -117,7 +106,7 @@
         file;
       
       context
-        .withArguments(['mySuperModule'])
+        .withArguments(['myApp'])
         .on('ready', function (generator) {
           file = path.join(
             generator.name, 
@@ -136,7 +125,7 @@
         file;
       
       context
-        .withArguments(['mySuperModule'])
+        .withArguments(['myApp'])
         .withOptions({ dir: 'somedir' }) 
         .on('ready', function (generator) {
           file = path.join(
@@ -160,14 +149,14 @@
         file;
   
       context
-        .withArguments(['mySuperModule'])
+        .withArguments(['myApp'])
         .on('end', function () {
           var subContext = runContext(undefined, function (dir) {
             fs.copySync(path.join(dir, '../template'), dir);
           });
         
           subContext
-            .withArguments(['mySuperSubModule', 'my-super'])
+            .withArguments(['mySubApp', 'my-app'])
             .withOptions({ dir: 'somedir' })
             .on('ready', function (generator) {
               file = path.join(
@@ -186,6 +175,8 @@
         });
     });
   
+    ////////////
+    
     function runContext(dir, setup) {
       dir = dir || 'context';
       setup = setup || blackhole;
@@ -193,6 +184,18 @@
       return helpers
         .run(__dirname)
         .inDir(path.join(__dirname, '../../test/tmp', dir), setup);
+    }
+    
+    function checkNaming(name, suffix, done) {
+      var context = runContext();
+    
+      context
+        .withArguments([name + suffix])
+        .on('ready', function (generator) {
+          expect(generator.name).to.equal(format(name));
+          expect(generator.module.name).to.equal('');
+          done();
+        });
     }
   });
 }());

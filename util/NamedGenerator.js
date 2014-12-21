@@ -40,6 +40,8 @@
         };
       }
       
+      ////////////
+      
       function parseModule() {
         var
           filename = getModuleFilename(generator.module),
@@ -75,6 +77,8 @@
         } else {
           generator.module = module;
         }
+        
+        ////////////
         
         function getModuleFilename (moduleRoot) {
           return path.join(

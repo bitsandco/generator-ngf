@@ -39,11 +39,8 @@
     
     _getCssClassName: function (style) {
       style = style || this.name;
-  
-      if (this.module.name !== '') {
-        style = this.module.name + '.' + style;
-      }
       
+      style = this.module.name + '.' + style;
       style = style.replace(/\./g, '-');
       
       return format(style);

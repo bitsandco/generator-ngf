@@ -40,10 +40,7 @@
     _getCssClassName: function (view) {
       view = view || this.name;
   
-      if (this.module.name !== '') {
-        view = this.module.name + '.' + view;
-      }
-      
+      view = this.module.name + '.' + view;
       view = view.replace(/\./g, '-');
       
       return format(view);

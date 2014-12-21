@@ -7,6 +7,8 @@
   
   <%= name %>.$inject = [];
   
+  ////////////
+  
   function <%= name %>() {
     var vm = this;
   }

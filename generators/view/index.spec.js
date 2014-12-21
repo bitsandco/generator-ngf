@@ -29,23 +29,18 @@
   
   chai.should();
   
-  describe('ng:controller', function() {
+  describe('ng:view', function() {
     
-    it('should use the controller name provided as argument' +
-      ', stripping \'controller\' at the end', function(done) {
-      checkNaming('myApp', 'Controller', done);
-    });
-    
-    it('should use the controller name provided as argument' +
-      ', stripping \'ctrl\' at the end', function(done) {
-      checkNaming('my-app_', 'ctrl', done);
+    it('should use the view name provided as argument' +
+      ', stripping \'view\' at the end', function(done) {
+      checkNaming('myApp', 'View', done);
     });
   
-    it('should use the controller name provided as argument', function(done) {
+    it('should use the view name provided as argument', function(done) {
       checkNaming('myApp', '', done);
     });
   
-    it('should generate a controller file', function(done) {
+    it('should generate a view file', function(done) {
       var
         context = runContext(),
         file;
@@ -53,7 +48,7 @@
       context
         .withArguments(['myApp'])
         .on('ready', function (generator) {
-          file = generator.name + '.controller.js';
+          file = generator.name + '.html';
         })
         .on('end', function () {
           assert.file([path.join(__dirname, '../../test/tmp/context', file)]);

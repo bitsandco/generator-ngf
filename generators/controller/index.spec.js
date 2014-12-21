@@ -19,44 +19,32 @@
   var
     blackhole = require('blackhole'),
     chai = require('chai'),
+    format = require('../../util/format.js'),
     path = require('path'),
     yeoman = require('yeoman-generator'),
     
-    assert = yeoman.assert,
+    expect = chai.expect,
     helpers = yeoman.test;
   
   chai.should();
   
-  describe('ng:app', function() {
+  describe('ng:module', function() {
     
-    it('should generate a module app', function(done) {
-      var context = runContext();
-      
-      context
-        .on('end', function () {
-          assert.file([path.join(
-            __dirname,
-            '../../test/tmp/context',
-            'app/app.module.js'
-          )]);
-          done();
-        });
+    it('should use the controller name provided as argument' +
+      ', stripping \'controller\' at the end', function(done) {
+      checkNaming('myApp', 'Controller', done);
     });
-      
-    it('should generate a module my-mod', function(done) {
-      var context = runContext();
-      
-      context
-        .withArguments(['myModModule'])
-        .on('end', function () {
-          assert.file([path.join(
-            __dirname,
-            '../../test/tmp/context',
-            'my-mod/my-mod.module.js'
-          )]);
-          done();
-        });
+    
+    it('should use the controller name provided as argument' +
+      ', stripping \'ctrl\' at the end', function(done) {
+      checkNaming('my-app_', 'ctrl', done);
     });
+  
+    it('should use the controller name provided as argument', function(done) {
+      checkNaming('myApp', '', done);
+    });
+  
+    ////////////
     
     function runContext(dir, setup) {
       dir = dir || 'context';
@@ -65,6 +53,18 @@
       return helpers
         .run(__dirname)
         .inDir(path.join(__dirname, '../../test/tmp', dir), setup);
+    }
+    
+    function checkNaming(name, suffix, done) {
+      var context = runContext();
+    
+      context
+        .withArguments([name + suffix])
+        .on('ready', function (generator) {
+          expect(generator.name).to.equal(format(name));
+          expect(generator.module.name).to.equal('');
+          done();
+        });
     }
   });
 }());

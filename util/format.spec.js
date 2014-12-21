@@ -17,33 +17,19 @@
   'use strict';
   
   var
-    NamedGenerator = require('../../util/NamedGenerator.js'),
-    path = require('path');
+    chai = require('chai'),
+    format = require('./format.js');
   
-  module.exports = NamedGenerator.extend({
-    constructor: function () {
-      NamedGenerator.apply(this, arguments);
-      
-      this._formatName(['-module', '-mod']);
-    },
-          
-    writing: function () {
-      this.fs.copyTpl(
-        this.templatePath('module.js'),
-        path.join(this.module.path, this.name, this.name + '.module.js'), {
-          name: this._getModuleName(this.name)
-        }
-      );
-    },
+  chai.should();
+  
+  describe('format', function() {
     
-    _getModuleName: function (module) {
-      module = module || this.name;
-  
-      if (this.module.name !== '') {
-        module = this.module.name + '.' + module;
-      }
-      
-      return module;
-    }
+    it('should strip one of the array endings', function() {
+      format('tostrip', ['strip', 'to', 'ip']).should.equal('to');
+    });
+    
+    it('should not strip anything', function() {
+      format('toFormat').should.equal('to-format');
+    });
   });
 }());

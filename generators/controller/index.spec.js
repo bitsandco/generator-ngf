@@ -28,7 +28,7 @@
   
   chai.should();
   
-  describe('ng:module', function() {
+  describe('ng:controller', function() {
     
     it('should use the controller name provided as argument' +
       ', stripping \'controller\' at the end', function(done) {
@@ -62,7 +62,6 @@
         .withArguments([name + suffix])
         .on('ready', function (generator) {
           expect(generator.name).to.equal(format(name));
-          expect(generator.module.name).to.equal('');
           done();
         });
     }

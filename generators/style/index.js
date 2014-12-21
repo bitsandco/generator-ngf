@@ -25,28 +25,28 @@
     constructor: function () {
       NamedGenerator.apply(this, arguments);
       
-      this._formatName('-view');
+      this._formatName('-style');
     },
           
     writing: function () {
       this.fs.copyTpl(
-        this.templatePath('view.html'),
-        path.join(this.module.path, this.name + '.html'), {
+        this.templatePath('style.scss'),
+        path.join(this.module.path, this.name + '.scss'), {
           cssClassName: this._getCssClassName(this.name)
         }
       );
     },
     
-    _getCssClassName: function (view) {
-      view = view || this.name;
+    _getCssClassName: function (style) {
+      style = style || this.name;
   
       if (this.module.name !== '') {
-        view = this.module.name + '.' + view;
+        style = this.module.name + '.' + style;
       }
       
-      view = view.replace(/\./g, '-');
+      style = style.replace(/\./g, '-');
       
-      return format(view);
+      return format(style);
     }
   });
 }());

@@ -40,18 +40,47 @@
       checkNaming('myApp', '', done);
     });
   
-    it('should generate a view file', function(done) {
+    it('should generate view and style files', function(done) {
       var
         context = runContext(),
-        file;
+        viewFile,
+		    styleFile;
       
       context
-        .withArguments(['myApp'])
+        .withArguments(['myAppView'])
         .on('ready', function (generator) {
-          file = generator.name + '.html';
+          viewFile = generator.name + '.html';
+		      styleFile = generator.name + '.scss';
         })
         .on('end', function () {
-          assert.file([path.join(__dirname, '../../test/tmp/context', file)]);
+          assert.file([
+			      path.join(__dirname, '../../test/tmp/context', viewFile),
+			      path.join(__dirname, '../../test/tmp/context', styleFile)
+		      ]);
+          done();
+        });
+    });
+    
+    it('should generate a view file only', function(done) {
+      var
+        context = runContext(),
+        viewFile,
+		    styleFile;
+      
+      context
+        .withArguments(['myAppView'])
+        .withOptions({'no-style': true})
+        .on('ready', function (generator) {
+          viewFile = generator.name + '.html';
+          styleFile = generator.name + '.scss';
+        })
+        .on('end', function () {
+          assert.file([
+    	      path.join(__dirname, '../../test/tmp/context', viewFile)
+          ]);
+          assert.noFile([
+    	      path.join(__dirname, '../../test/tmp/context', styleFile)
+          ]);
           done();
         });
     });

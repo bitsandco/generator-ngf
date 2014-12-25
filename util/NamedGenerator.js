@@ -30,8 +30,8 @@
       
       this.argument('name', { type: String, required: true });
       
-      this.argument('module', { type: String, required: false });
-      if (typeof this.module === 'string') {
+      this.argument('moduleName', { type: String, required: false });
+      if (typeof this.moduleName === 'string') {
         parseModule();
       } else {
         this.module = {
@@ -44,20 +44,20 @@
       
       function parseModule() {
         var
-          filename = getModuleFilename(generator.module),
+          filename = getModuleFilename(generator.moduleName),
           i,
           l,
           module,
-          moduleName = path.basename(generator.module),
+          moduleName = path.basename(generator.moduleName),
           modules;
         
         if (!fs.existsSync(filename)) {
-          filename = generator.module.replace(/\./g, path.sep);
+          filename = generator.moduleName.replace(/\./g, path.sep);
           filename = getModuleFilename(filename);
-          moduleName = generator.module;
+          moduleName = generator.moduleName;
           
           if (!fs.existsSync(filename)) {
-            throw new Error('Could not find module ' + generator.module);
+            throw new Error('Could not find module ' + generator.moduleName);
           }
         }
         

@@ -25,7 +25,17 @@
     constructor: function () {
       NamedGenerator.apply(this, arguments);
       
+      this.option('no-style', { type: Boolean });
+      
       this._formatName('-view');
+      
+      if (this.options['no-style'] !== true) {
+        this.composeWith('style', {
+          args: this.arguments, options: this.options
+        }, {
+          local: path.join(__dirname, '../style')
+        });
+      }
     },
           
     writing: function () {

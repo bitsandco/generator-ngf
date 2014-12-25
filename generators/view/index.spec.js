@@ -69,7 +69,7 @@
       
       context
         .withArguments(['myAppView'])
-        .withOptions({'no-style': true})
+        .withOptions({ 'no-style': true })
         .on('ready', function (generator) {
           viewFile = generator.name + '.html';
           styleFile = generator.name + '.scss';

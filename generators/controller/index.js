@@ -24,7 +24,17 @@
     constructor: function () {
       NamedGenerator.apply(this, arguments);
       
+      this.option('no-view', { type: Boolean });
+      
       this._formatName(['-controller', '-ctrl']);
+      
+      if (this.options['no-view'] !== true) {
+        this.composeWith('view', {
+          args: this.arguments, options: this.options
+        }, {
+          local: path.join(__dirname, '../view')
+        });
+      }
     },
           
     writing: function () {

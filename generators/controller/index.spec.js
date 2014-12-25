@@ -45,18 +45,47 @@
       checkNaming('myApp', '', done);
     });
   
-    it('should generate a controller file', function(done) {
+    it('should generate controller and view files', function(done) {
       var
         context = runContext(),
-        file;
+        controllerFile,
+        viewFile;
       
       context
-        .withArguments(['myApp'])
+        .withArguments(['myAppCtrl'])
         .on('ready', function (generator) {
-          file = generator.name + '.controller.js';
+          controllerFile = generator.name + '.controller.js';
+          viewFile = generator.name + '.html';
         })
         .on('end', function () {
-          assert.file([path.join(__dirname, '../../test/tmp/context', file)]);
+          assert.file([
+            path.join(__dirname, '../../test/tmp/context', controllerFile),
+            path.join(__dirname, '../../test/tmp/context', viewFile)
+          ]);
+          done();
+        });
+    });
+    
+    it('should generate a controller file only', function(done) {
+      var
+        context = runContext(),
+        controllerFile,
+        viewFile;
+      
+      context
+        .withArguments(['myAppCtrl'])
+        .withOptions({ 'no-view': true })
+        .on('ready', function (generator) {
+          controllerFile = generator.name + '.controller.js';
+          viewFile = generator.name + '.html';
+        })
+        .on('end', function () {
+          assert.file([
+            path.join(__dirname, '../../test/tmp/context', controllerFile)
+          ]);
+          assert.noFile([
+            path.join(__dirname, '../../test/tmp/context', viewFile)
+          ]);
           done();
         });
     });

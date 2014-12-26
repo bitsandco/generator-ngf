@@ -48,35 +48,35 @@
           i,
           l,
           module,
-          moduleName = path.basename(generator.moduleName),
+          moduleName,
           modules;
-        
-        if (!fs.existsSync(filename)) {
-          filename = generator.moduleName.replace(/\./g, path.sep);
-          filename = getModuleFilename(filename);
-          moduleName = generator.moduleName;
           
-          if (!fs.existsSync(filename)) {
-            throw new Error('Could not find module ' + generator.moduleName);
-          }
-        }
-        
-        modules = util.module.findModules(filename);
-        
-        for (i = 0, l = modules.length; i < l; i += 1) {
-          if (modules[i].name === moduleName) {
-            module = {
-              name: modules[i].name,
-              path: generator.options.dir || path.dirname(filename)
-            };
-          }
-        }
-        
-        if (module === undefined) {
-          throw new Error('Could not find module ' + generator.module);
+        if (!fs.existsSync(filename)) {
+          filename = findModule(generator.moduleName);
+          
+          module = {
+            name: generator.moduleName,
+            path: generator.options.dir || path.dirname(filename)
+          };
         } else {
-          generator.module = module;
+          moduleName = path.basename(generator.moduleName);
+          
+          modules = util.module.findModules(filename);
+        
+          for (i = 0, l = modules.length;
+            i < l && module === undefined;
+            i += 1) {
+              console.log(moduleName);
+            if (generator._.endsWith(modules[i].name, moduleName)) {
+              module = {
+                name: modules[i].name,
+                path: generator.options.dir || path.dirname(filename)
+              };
+            }
+          }
         }
+        
+        generator.module = module;
         
         ////////////
         
@@ -86,6 +86,46 @@
             moduleRoot,
             path.basename(moduleRoot) + '.module.js'
           );
+        }
+        
+        function findModule (moduleName) {
+          var
+            file,
+            files = [generator.destinationRoot()],
+            i,
+            l,
+            modules,
+            stats;
+          
+          while (files.length > 0) {
+            file = files.shift();
+            
+            stats = fs.statSync(file);
+            if (stats.isDirectory()) {
+              files = files.concat(fs.readdirSync(file).map(fullPath(file)));
+            } else if (generator._.endsWith(
+              path.basename(file),
+              '.module.js'
+            )) {
+              modules = util.module.findModules(file);
+              
+              for (i = 0, l = modules.length; i < l; i += 1) {
+                if (modules[i].name === moduleName) {
+                  return file;
+                }
+              }
+            }
+          }
+          
+          return null;
+          
+          ////////////
+          
+          function fullPath(file) {
+            return function (f) {
+              return path.join(file, f);
+            };
+          }
         }
       }
     },

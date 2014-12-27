@@ -32,9 +32,10 @@
         local: path.join(__dirname, '../module')
       });
       
-      // Get module
       if (typeof this.options.dir === 'string') {
         this.options.dir = path.join(this.options.dir, this.name);
+      } else {
+        this.options.dir = path.join(this.module.path, this.name);
       }
       if (typeof this.moduleName === 'string' && this.moduleName !== '') {
           this.moduleName = this.module.name + '.';

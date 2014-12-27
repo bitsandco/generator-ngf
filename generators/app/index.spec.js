@@ -36,7 +36,7 @@
         .on('end', function () {
           assert.file([path.join(
             __dirname,
-            '../../test/tmp/context',
+            '../../test/tmp/context/app',
             'app/app.module.js'
           )]);
           done();
@@ -51,7 +51,7 @@
         .on('end', function () {
           assert.file([path.join(
             __dirname,
-            '../../test/tmp/context',
+            '../../test/tmp/context/app',
             'my-mod/my-mod.module.js'
           )]);
           done();

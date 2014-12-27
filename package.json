@@ -4,20 +4,22 @@
   "description": "An AngularJS generator for Yeoman that supports feature based project structure.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitsandco/generator-ng.git"
+    "url": "https://github.com/bitsandco/generator-ngf.git"
   },
   "keywords": [
     "yeoman-generator",
     "angular",
     "angularjs",
-    "js"
+    "js",
+    "feature",
+    "ng"
   ],
   "license": "GPL-3.0",
   "author": "Romain Francez <romain@bitsandco.com>",
   "bugs": {
-    "url": "https://github.com/bitsandco/generator-ng/issues"
+    "url": "https://github.com/bitsandco/generator-ngf/issues"
   },
-  "homepage": "https://github.com/bitsandco/generator-ng",
+  "homepage": "https://github.com/bitsandco/generator-ngf",
   "dependencies": {
     "ast-query": "^0.3.0",
     "yeoman-generator": "^0.18.1"

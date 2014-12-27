@@ -20,7 +20,10 @@
     fs = require('fs'),
     Generator = require('./Generator.js'),
     path = require('path'),
-    util = require('./');
+    util = {
+      format: require('./format.js'),
+      module: require('./module.js')
+    };
     
   module.exports = Generator.extend({
     constructor: function () {
@@ -93,6 +96,7 @@
             files = [generator.destinationRoot()],
             i,
             l,
+            modulePathName,
             modules,
             stats;
           
@@ -116,11 +120,13 @@
             }
           }
           
+          modulePathName = moduleName.replace(/\./g, path.sep);
           moduleName = moduleName.split('.');
           moduleName = moduleName[moduleName.length - 1];
+          
           return path.join(
             generator.destinationRoot(),
-            moduleName,
+            modulePathName,
             moduleName +  '.module.js'
           );
           

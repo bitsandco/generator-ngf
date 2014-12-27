@@ -29,10 +29,14 @@
         this.arguments.unshift('app');
       }
       
-      this.composeWith('module', {
+      if (typeof this.options.dir !== 'string') {
+        this.options.dir = 'app';
+      }
+      
+      this.composeWith('section', {
         args: this.arguments, options: this.options
       }, {
-        local: path.join(__dirname, '../module')
+        local: path.join(__dirname, '../section')
       });
     },
     

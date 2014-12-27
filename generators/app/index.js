@@ -41,6 +41,35 @@
     },
     
     writing: function () {
+      this.directory(
+        this.templatePath('app'),
+        path.join(this.destinationRoot(), this.options.dir, '..')
+      );
+      
+      this.fs.copyTpl(
+        this.templatePath('gulpfile.js'),
+        path.join(this.destinationRoot(), 'gulpfile.js'),
+        {}
+      );
+      
+      this.fs.copyTpl(
+        this.templatePath('package.json'),
+        path.join(this.destinationRoot(), 'package.json'),
+        {}
+      );
+      
+      this.fs.copyTpl(
+        this.templatePath('README.md'),
+        path.join(this.destinationRoot(), 'README.md'),
+        {}
+      );
+    },
+    
+    install: function () {
+      this.installDependencies({
+        skipInstall: this.options['skip-install'],
+        skipMessage: this.options['skip-install']
+      });
     }
   });
 }());

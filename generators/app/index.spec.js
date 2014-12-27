@@ -64,7 +64,8 @@
       
       return helpers
         .run(__dirname)
-        .inDir(path.join(__dirname, '../../test/tmp', dir), setup);
+        .inDir(path.join(__dirname, '../../test/tmp', dir), setup)
+        .withOptions({ 'skip-install': true });
     }
   });
 }());

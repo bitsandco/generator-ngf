@@ -96,12 +96,9 @@
             modules,
             stats;
           
-          console.log(moduleName);
-          console.log(generator.destinationRoot());
-          console.log(generator);
           while (files.length > 0) {
             file = files.shift();
-            console.log(file);
+            
             stats = fs.statSync(file);
             if (stats.isDirectory()) {
               files = files.concat(fs.readdirSync(file).map(fullPath(file)));

@@ -187,7 +187,7 @@
     }
     
     function checkNaming(name, suffix, done) {
-      var context = runContext();
+      var context = runContext('ng_module' + name + suffix);
     
       context
         .withArguments([name + suffix])

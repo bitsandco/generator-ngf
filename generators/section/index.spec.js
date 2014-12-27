@@ -29,33 +29,79 @@
   
   chai.should();
   
-  describe('ng:style', function() {
+  describe('ng:section', function() {
     
-    it('should use the style name provided as argument' +
-      ', stripping \'style\' at the end', function(done) {
-      checkNaming('myApp', 'Style', done);
+    it('should use the section name provided as argument' +
+      ', stripping \'section\' at the end', function(done) {
+      checkNaming('myApp', 'Section', done);
+    });
+    
+    it('should use the section name provided as argument' +
+      ', stripping \'sec\' at the end', function(done) {
+      checkNaming('my-app_', 'sec', done);
     });
   
-    it('should use the style name provided as argument', function(done) {
+    it('should use the section name provided as argument', function(done) {
       checkNaming('myApp', '', done);
     });
-  
+    
     it('should generate a style file', function(done) {
       var
         context = runContext(),
-        file;
+        controllerFile,
+        moduleFile,
+        name;
       
       context
         .withArguments(['myApp'])
         .on('ready', function (generator) {
-          file = generator.name + '.scss';
+          name = generator.name;
+          moduleFile = name + '.module.js';
+          controllerFile = name + '.controller.js';
         })
         .on('end', function () {
-          assert.file([path.join(__dirname, '../../test/tmp/context', file)]);
+          assert.file([
+            path.join(__dirname, '../../test/tmp/context', name, moduleFile),
+            path.join(__dirname, '../../test/tmp/context', name, controllerFile)
+          ]);
           done();
         });
     });
     
+    it('should accept a directory option', function(done) {
+      var
+        context = runContext(),
+        controllerFile,
+        moduleFile,
+        name;
+    
+      context
+        .withArguments(['myApp'])
+        .withOptions({ dir: 'toto' })
+        .on('ready', function (generator) {
+          name = generator.name;
+          moduleFile = generator.name + '.module.js';
+          controllerFile = generator.name + '.controller.js';
+        })
+        .on('end', function () {
+          assert.file([
+            path.join(
+              __dirname, 
+              '../../test/tmp/context/toto', 
+              name, 
+              moduleFile
+            ),
+            path.join(
+              __dirname, 
+              '../../test/tmp/context/toto', 
+              name, 
+              controllerFile
+            )
+          ]);
+          done();
+        });
+    });
+  
     ////////////
     
     function runContext(dir, setup) {
@@ -68,12 +114,13 @@
     }
     
     function checkNaming(name, suffix, done) {
-      var context = runContext('ng_style' + name + suffix);
+      var context = runContext('ng_section' + name + suffix);
     
       context
         .withArguments([name + suffix])
         .on('ready', function (generator) {
           expect(generator.name).to.equal(format(name));
+          expect(generator.module.name).to.equal('');
           done();
         });
     }

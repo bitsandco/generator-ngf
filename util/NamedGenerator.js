@@ -66,7 +66,6 @@
           for (i = 0, l = modules.length;
             i < l && module === undefined;
             i += 1) {
-              console.log(moduleName);
             if (generator._.endsWith(modules[i].name, moduleName)) {
               module = {
                 name: modules[i].name,
@@ -117,7 +116,13 @@
             }
           }
           
-          return null;
+          moduleName = moduleName.split('.');
+          moduleName = moduleName[moduleName.length - 1];
+          return path.join(
+            generator.destinationRoot(),
+            moduleName,
+            moduleName +  '.module.js'
+          );
           
           ////////////
           

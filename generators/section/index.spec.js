@@ -20,10 +20,10 @@
     blackhole = require('blackhole'),
     chai = require('chai'),
     format = require('../../util/format.js'),
-    fs = require('fs-extra'),
     path = require('path'),
     yeoman = require('yeoman-generator'),
     
+    assert = yeoman.assert,
     expect = chai.expect,
     helpers = yeoman.test;
   
@@ -45,24 +45,60 @@
       checkNaming('myApp', '', done);
     });
     
-    it('should accept an optional argument ' +
-      'for the parent module', function(done) {
-      var context = runContext('template');
+    it('should generate a style file', function(done) {
+      var
+        context = runContext(),
+        controllerFile,
+        moduleFile,
+        name;
+      
+      context
+        .withArguments(['myApp'])
+        .on('ready', function (generator) {
+          name = generator.name;
+          moduleFile = name + '.module.js';
+          controllerFile = name + '.controller.js';
+        })
+        .on('end', function () {
+          assert.file([
+            path.join(__dirname, '../../test/tmp/context', name, moduleFile),
+            path.join(__dirname, '../../test/tmp/context', name, controllerFile)
+          ]);
+          done();
+        });
+    });
+    
+    it('should accept a directory option', function(done) {
+      var
+        context = runContext(),
+        controllerFile,
+        moduleFile,
+        name;
     
       context
         .withArguments(['myApp'])
+        .withOptions({ dir: 'toto' })
+        .on('ready', function (generator) {
+          name = generator.name;
+          moduleFile = generator.name + '.module.js';
+          controllerFile = generator.name + '.controller.js';
+        })
         .on('end', function () {
-          var subContext = runContext(undefined, function (dir) {
-            fs.copySync(path.join(dir, '../template'), dir);
-          });
-          
-          subContext
-            .withArguments(['mySubAppModule', 'my-app'])
-            .on('ready', function (generator) {
-              expect(generator.name).to.exist();
-              expect(generator.module.name).to.equal('my-app');
-              done();
-            });
+          assert.file([
+            path.join(
+              __dirname, 
+              '../../test/tmp/context/toto', 
+              name, 
+              moduleFile
+            ),
+            path.join(
+              __dirname, 
+              '../../test/tmp/context/toto', 
+              name, 
+              controllerFile
+            )
+          ]);
+          done();
         });
     });
   

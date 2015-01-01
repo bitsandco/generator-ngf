@@ -46,22 +46,19 @@
         path.join(this.destinationRoot(), this.options.dir, '..')
       );
       
-      this.fs.copyTpl(
+      this.fs.copy(
         this.templatePath('gulpfile.js'),
-        path.join(this.destinationRoot(), 'gulpfile.js'),
-        {}
+        path.join(this.destinationRoot(), 'gulpfile.js')
       );
       
-      this.fs.copyTpl(
+      this.fs.copy(
         this.templatePath('package.json'),
-        path.join(this.destinationRoot(), 'package.json'),
-        {}
+        path.join(this.destinationRoot(), 'package.json')
       );
       
-      this.fs.copyTpl(
+      this.fs.copy(
         this.templatePath('README.md'),
-        path.join(this.destinationRoot(), 'README.md'),
-        {}
+        path.join(this.destinationRoot(), 'README.md')
       );
     },
     

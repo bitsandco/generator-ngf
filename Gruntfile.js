@@ -44,7 +44,7 @@
             'generators/**/*.js',
             'util/**/*.js',
             '!**/*.spec.js',
-            '!**/templates/**.js'
+            '!**/templates/**/*.js'
           ]
         },
         test: {

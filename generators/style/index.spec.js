@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Bits & Co. and other generator-ng contributors.
+// Copyright (c) 2014 - 2015 Bits & Co. and other generator-ngf contributors.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

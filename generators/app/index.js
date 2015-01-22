@@ -16,9 +16,9 @@
 (function () {
   'use strict';
 
-  var
-    Generator = require('../../util/Generator.js'),
-    path = require('path');
+  var format = require('../../util/format.js'),
+      Generator = require('../../util/Generator.js'),
+      path = require('path');
     
   module.exports = Generator.extend({
     constructor: function () {
@@ -26,7 +26,7 @@
       
       this.argument('name', { type: String, required: false });
       if (typeof this.name !== 'string') {
-        this.arguments.unshift('app');
+        this.name = 'app';
       }
       
       if (typeof this.options.dir !== 'string') {
@@ -34,7 +34,8 @@
       }
       
       this.composeWith('section', {
-        args: this.arguments, options: this.options
+        args: JSON.parse(JSON.stringify(this.arguments)),
+        options: JSON.parse(JSON.stringify(this.options))
       }, {
         local: path.join(__dirname, '../section')
       });
@@ -43,22 +44,37 @@
     writing: function () {
       this.directory(
         this.templatePath('app'),
-        path.join(this.destinationRoot(), this.options.dir, '..')
+        path.join(this.destinationRoot(), this.options.dir)
       );
       
       this.fs.copy(
-        this.templatePath('gulpfile.js'),
+        this.templatePath('_gulpfile.js'),
         path.join(this.destinationRoot(), 'gulpfile.js')
       );
       
       this.fs.copy(
-        this.templatePath('package.json'),
+        this.templatePath('_package.json'),
         path.join(this.destinationRoot(), 'package.json')
       );
       
       this.fs.copy(
         this.templatePath('README.md'),
         path.join(this.destinationRoot(), 'README.md')
+      );
+      
+      this.fs.copyTpl(
+        this.templatePath('_bower.json'),
+        path.join(this.destinationRoot(), 'bower.json'), {
+          appname: format(this.name),
+          directory: path.relative(this.destinationRoot(), this.options.dir)
+        }
+      );
+      
+      this.fs.copyTpl(
+        this.templatePath('_.bowerrc'),
+        path.join(this.destinationRoot(), '.bowerrc'), {
+          directory: path.relative(this.destinationRoot(), this.options.dir)
+        }
       );
     },
     

@@ -86,12 +86,16 @@ gulp.task('styles', function () {
   return gulp.src([
       'app/assets/styles/*.scss',
       'app/assets/styles/**/*.css',
-      'app/assets/styles/components/components.scss'
+      '!app/assets/_*.scss'
     ])
     .pipe($.changed('styles', {extension: '.scss'}))
     .pipe($.rubySass({
         style: 'expanded',
-        precision: 10
+        precision: 10,
+        loadPath: [
+          'app/assets/styles',
+          'app/assets/bower_components/foundation-apps/scss'
+        ]
       })
       .on('error', console.error.bind(console))
     )

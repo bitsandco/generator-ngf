@@ -27,6 +27,7 @@ var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
 var pagespeed = require('psi');
 var reload = browserSync.reload;
+var wiredep = require('wiredep').stream;
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -43,7 +44,9 @@ var AUTOPREFIXER_BROWSERS = [
 // Lint JavaScript
 gulp.task('jshint', function () {
   return gulp.src([
-    'app/**/*.js'
+    'app/**/*.js',
+    '!**/bower_components/**/*.js',
+    '!**/*min.js'
   ]).pipe(reload({stream: true, once: true}))
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'))
@@ -84,20 +87,18 @@ gulp.task('fonts', function () {
 gulp.task('styles', function () {
   // For best performance, don't add Sass partials to `gulp.src`
   return gulp.src([
-      'app/assets/styles/*.scss',
+      'app/assets/styles/**/*.scss',
       'app/assets/styles/**/*.css',
-      '!app/assets/_*.scss'
+      '!app/assets/styles/**/_*.scss'
     ])
     .pipe($.changed('styles', {extension: '.scss'}))
-    .pipe($.rubySass({
-        style: 'expanded',
+    .pipe($.sass({
         precision: 10,
         loadPath: [
-          'app/assets/styles',
-          'app/assets/bower_components/foundation-apps/scss'
-        ]
+          'app/assets/styles'
+        ],
+        onError: console.error.bind(console, 'Sass error:')
       })
-      .on('error', console.error.bind(console))
     )
     .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
     .pipe(gulp.dest('.tmp/assets/styles'))
@@ -105,6 +106,19 @@ gulp.task('styles', function () {
     .pipe($.if('*.css', $.csso()))
     .pipe(gulp.dest('dist/assets/styles'))
     .pipe($.size({title: 'styles'}));
+});
+
+// Add bower dependencies
+gulp.task('bower', function () {
+  gulp.src([
+    'app/**/*.html'
+  ]).pipe(wiredep())
+    .pipe(gulp.dest('app'));
+    
+  return gulp.src([
+    'app/assets/styles/**/*.{scss,sass}'
+  ]).pipe(wiredep())
+    .pipe(gulp.dest('app/assets/styles'));
 });
 
 // Scan Your HTML For Assets & Optimize Them
@@ -120,8 +134,7 @@ gulp.task('html', function () {
     // the next line to only include styles your project uses.
     .pipe($.if('*.css', $.uncss({
       html: [
-        'app/index.html',
-        'app/styleguide.html'
+        'app/index.html'
       ],
       // CSS Selectors for UnCSS to ignore
       ignore: [
@@ -144,12 +157,14 @@ gulp.task('html', function () {
 });
 
 // Clean Output Directory
-gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
+gulp.task('clean', del.bind(null, ['.tmp', 'dist/*', '!dist/.git'], {dot: true}));
 
 // Watch Files For Changes & Reload
-gulp.task('serve', ['styles'], function () {
+gulp.task('serve', ['prepare'], function () {
   browserSync({
     notify: false,
+    // Customize the BrowserSync console logging prefix
+    logPrefix: 'WSK',
     // Run as an https by uncommenting 'https: true'
     // Note: this uses an unsigned certificate which on first access
     //       will present a certificate warning in the browser.
@@ -167,6 +182,7 @@ gulp.task('serve', ['styles'], function () {
 gulp.task('serve:dist', ['default'], function () {
   browserSync({
     notify: false,
+    logPrefix: 'WSK',
     // Run as an https by uncommenting 'https: true'
     // Note: this uses an unsigned certificate which on first access
     //       will present a certificate warning in the browser.
@@ -175,21 +191,25 @@ gulp.task('serve:dist', ['default'], function () {
   });
 });
 
+gulp.task('prepare', ['clean'], function (cb) {
+  runSequence('bower', 'styles', cb);
+});
+
 // Build Production Files, the Default Task
 gulp.task('default', ['clean'], function (cb) {
-  runSequence('styles', ['jshint', 'html', 'images', 'fonts', 'copy'], cb);
+  runSequence('prepare', ['jshint', 'html', 'images', 'fonts', 'copy'], cb);
 });
 
 // Run PageSpeed Insights
-// Update `url` below to the public URL for your site
-gulp.task('pagespeed', pagespeed.bind(null, {
-  // By default, we use the PageSpeed Insights
-  // free (no API key) tier. You can use a Google
-  // Developer API key if you have one. See
-  // http://goo.gl/RkN0vE for info key: 'YOUR_API_KEY'
-  url: 'https://example.com',
-  strategy: 'mobile'
-}));
+gulp.task('pagespeed', function (cb) {
+  // Update the below URL to the public URL of your site
+  pagespeed.output('example.com', {
+    strategy: 'mobile',
+    // By default we use the PageSpeed Insights free (no API key) tier.
+    // Use a Google Developer API key if you have one: http://goo.gl/RkN0vE
+    // key: 'YOUR_API_KEY'
+  }, cb);
+});
 
 // Load custom tasks from the `tasks` directory
 try { require('require-dir')('tasks'); } catch (err) {}

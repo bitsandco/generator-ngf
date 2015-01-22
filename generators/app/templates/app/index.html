@@ -29,8 +29,14 @@
     <!--
     <link rel="canonical" href="http://www.example.com/">
     -->
-      
-    <link href="/assets/styles/app.css" rel="stylesheet" type="text/css">
+    
+    <!-- build:css assets/styles/vendors.min.css -->
+    <!-- bower:css -->
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css assets/styles/main.min.css -->
+    <link href="/assets/styles/main.css" rel="stylesheet" type="text/css">
+    <!-- endbuild -->
   </head>
   
   <body>
@@ -52,5 +58,10 @@
       ga('create', 'UA-XXXXX-X', 'auto');
       ga('send', 'pageview');
     </script>
+    
+    <!-- build:js assets/scripts/vendors.min.js -->
+    <!-- bower:js -->
+    <!-- endbower -->
+    <!-- endbuild -->
   </body>
 </html>

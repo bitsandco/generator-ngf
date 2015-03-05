@@ -91,7 +91,8 @@ gulp.task('styles', function () {
       'app/assets/styles/**/*.css',
       '!app/assets/styles/**/_*.scss'
     ])
-    .pipe($.changed('styles', {extension: '.scss'}))
+    .pipe($.sourcemaps.init())
+    .pipe($.changed('.tmp/assets/styles', {extension: '.css'}))
     .pipe($.sass({
         precision: 10,
         loadPath: [
@@ -101,6 +102,7 @@ gulp.task('styles', function () {
       })
     )
     .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
+    .pipe($.sourcemaps.write())
     .pipe(gulp.dest('.tmp/assets/styles'))
     // Concatenate And Minify Styles
     .pipe($.if('*.css', $.csso()))
@@ -135,11 +137,6 @@ gulp.task('html', function () {
     .pipe($.if('*.css', $.uncss({
       html: [
         'app/index.html'
-      ],
-      // CSS Selectors for UnCSS to ignore
-      ignore: [
-        /.navdrawer-container.open/,
-        /.app-bar.open/
       ]
     })))
     // Concatenate And Minify Styles
@@ -212,4 +209,4 @@ gulp.task('pagespeed', function (cb) {
 });
 
 // Load custom tasks from the `tasks` directory
-try { require('require-dir')('tasks'); } catch (err) {}
+// try { require('require-dir')('tasks'); } catch (err) {}

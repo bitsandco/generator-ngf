@@ -16,12 +16,65 @@
 (function () {
   'use strict';
 
-  var generators = require('yeoman-generator');
+  var
+    cheerio = require('cheerio'),
+    fs = require('fs'),
+    generators = require('yeoman-generator'),
+    path = require('path'),
+  
+    pattern = /(.*?)<!--\s+ngf:js\s+-->[\s\S]*?<!--\s+ngf\s+-->/;
     
   module.exports = generators.Base.extend({
     constructor: function () {
       generators.Base.apply(this, arguments);
       this.option('dir', { type: String });
+    },
+    
+    _appendScript: function (scriptPath) {
+      var
+        $,
+        content,
+        indent,
+        index,
+        indexPath = path.join(this.destinationRoot(), 'app', 'index.html'),
+        match,
+        replace,
+        script;
+      
+      content = fs.readFileSync(indexPath, 'utf-8');
+      
+      match = pattern.exec(content);
+      
+      if (match !== null &&
+          match.constructor === Array &&
+          typeof match[0] === 'string') {
+        $ = cheerio.load(match[0]);
+        indent = (new Array(match[1].length + 1)).join(' ');
+        
+        script = '\n' + indent + '<script src="' + scriptPath + '"></script>';
+        
+        if ($.root().children().length === 0) {
+          replace = indent + '<!-- ngf:js -->' + script +
+            '\n' + indent + '<!-- ngf -->';
+        } else {
+          index = -1;
+          $.root().children().each(function(i) {
+            if ($(this).attr('src') === scriptPath) {
+              index = i;
+            }
+          });
+          
+          if (index === -1) {
+            $.root().children().last().after(script);
+            replace = $.html();
+          }
+        }
+        
+        if (replace !== undefined) {
+          content = content.replace(match[0], replace);
+          fs.writeFileSync(indexPath, content);
+        }
+      }
     }
   });
 }());

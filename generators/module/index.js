@@ -36,6 +36,16 @@
       );
     },
     
+    install: function () {
+      var
+        appPath = path.join(this.destinationRoot(), 'app'),
+        fullPath = path.join(this.module.path,
+          this.name,
+          this.name + '.module.js');
+      
+      this._appendScript(path.relative(appPath, fullPath));
+    },
+    
     _getModuleName: function (module) {
       module = module || this.name;
   

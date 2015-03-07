@@ -21,8 +21,9 @@
   },
   "homepage": "https://github.com/bitsandco/generator-ngf",
   "dependencies": {
-    "ast-query": "^0.3.0",
-    "yeoman-generator": "^0.18.1"
+    "ast-query": "^1.0.1",
+    "cheerio": "^0.18.0",
+    "yeoman-generator": "^0.18.10"
   },
   "devDependencies": {
     "blackhole": "^1.0.2",

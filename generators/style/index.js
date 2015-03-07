@@ -31,7 +31,7 @@
     writing: function () {
       this.fs.copyTpl(
         this.templatePath('style.scss'),
-        path.join('_' + this.module.path, this.name + '.scss'), {
+        path.join(this.module.path, '_' + this.name + '.scss'), {
           cssClassName: this._getCssClassName(this.name)
         }
       );

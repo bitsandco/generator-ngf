@@ -38,13 +38,23 @@
     },
           
     writing: function () {
+      var fullPath = path.join(this.module.path, this.name + '.controller.js');
+      
       this.fs.copyTpl(
         this.templatePath('controller.js'),
-        path.join(this.module.path, this.name + '.controller.js'), {
+        fullPath, {
           module: this.module.name,
           name: this._.classify(this.name)
         }
       );
+    },
+    
+    install: function () {
+      var
+        appPath = path.join(this.destinationRoot(), 'app'),
+        fullPath = path.join(this.module.path, this.name + '.controller.js');
+      
+      this._appendScript(path.relative(appPath, fullPath));
     }
   });
 }());

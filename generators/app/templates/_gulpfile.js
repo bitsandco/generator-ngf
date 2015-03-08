@@ -41,10 +41,12 @@ var AUTOPREFIXER_BROWSERS = [
   'bb >= 10'
 ];
 
+var appDirectory = '<%= appDir %>';
+
 // Lint JavaScript
 gulp.task('jshint', function () {
   return gulp.src([
-    'app/**/*.js',
+    appDirectory + '/**/*.js',
     '!**/bower_components/**/*.js',
     '!**/*min.js'
   ]).pipe(reload({stream: true, once: true}))
@@ -55,7 +57,7 @@ gulp.task('jshint', function () {
 
 // Optimize Images
 gulp.task('images', function () {
-  return gulp.src('app/assets/images/**/*')
+  return gulp.src(appDirectory + '/assets/images/**/*')
     .pipe($.cache($.imagemin({
       progressive: true,
       interlaced: true
@@ -67,8 +69,8 @@ gulp.task('images', function () {
 // Copy All Files At The Root Level (app)
 gulp.task('copy', function () {
   return gulp.src([
-    'app/*',
-    '!app/*.html',
+    appDirectory + '/*',
+    '!' + appDirectory + '/*.html',
     'node_modules/apache-server-configs/dist/.htaccess'
   ], {
     dot: true
@@ -78,7 +80,7 @@ gulp.task('copy', function () {
 
 // Copy Web Fonts To Dist
 gulp.task('fonts', function () {
-  return gulp.src(['app/assets/fonts/**'])
+  return gulp.src([appDirectory + '/assets/fonts/**'])
     .pipe(gulp.dest('dist/assets/fonts'))
     .pipe($.size({title: 'fonts'}));
 });
@@ -87,16 +89,16 @@ gulp.task('fonts', function () {
 gulp.task('styles', function () {
   // For best performance, don't add Sass partials to `gulp.src`
   return gulp.src([
-      'app/assets/styles/**/*.scss',
-      'app/assets/styles/**/*.css',
-      '!app/assets/styles/**/_*.scss'
+      appDirectory + '/assets/styles/**/*.scss',
+      appDirectory + '/assets/styles/**/*.css',
+      '!' + appDirectory + '/assets/styles/**/_*.scss'
     ])
     .pipe($.sourcemaps.init())
     .pipe($.changed('.tmp/assets/styles', {extension: '.css'}))
     .pipe($.sass({
         precision: 10,
         loadPath: [
-          'app/assets/styles'
+          appDirectory + '/assets/styles'
         ],
         onError: console.error.bind(console, 'Sass error:')
       })
@@ -113,21 +115,21 @@ gulp.task('styles', function () {
 // Add bower dependencies
 gulp.task('bower', function () {
   gulp.src([
-    'app/**/*.html'
+    appDirectory + '/**/*.html'
   ]).pipe(wiredep())
-    .pipe(gulp.dest('app'));
+    .pipe(gulp.dest(appDirectory));
     
   return gulp.src([
-    'app/assets/styles/**/*.{scss,sass}'
+    appDirectory + '/assets/styles/**/*.{scss,sass}'
   ]).pipe(wiredep())
-    .pipe(gulp.dest('app/assets/styles'));
+    .pipe(gulp.dest(appDirectory + '/assets/styles'));
 });
 
 // Scan Your HTML For Assets & Optimize Them
 gulp.task('html', function () {
-  var assets = $.useref.assets({searchPath: '{.tmp,app}'});
+  var assets = $.useref.assets({searchPath: '{.tmp,' + appDirectory + '}'});
 
-  return gulp.src('app/**/*.html')
+  return gulp.src(appDirectory + '/**/*.html')
     .pipe(assets)
     // Concatenate And Minify JavaScript
     .pipe($.if('*.js', $.uglify({preserveComments: 'some'})))
@@ -136,7 +138,7 @@ gulp.task('html', function () {
     // the next line to only include styles your project uses.
     .pipe($.if('*.css', $.uncss({
       html: [
-        'app/index.html'
+        appDirectory + '/index.html'
       ]
     })))
     // Concatenate And Minify Styles
@@ -166,13 +168,14 @@ gulp.task('serve', ['prepare'], function () {
     // Note: this uses an unsigned certificate which on first access
     //       will present a certificate warning in the browser.
     // https: true,
-    server: ['.tmp', 'app']
+    server: ['.tmp', appDirectory]
   });
 
-  gulp.watch(['app/**/*.html'], reload);
-  gulp.watch(['app/assets/styles/**/*.{scss,css}'], ['styles', reload]);
-  gulp.watch(['app/assets/scripts/**/*.js'], ['jshint']);
-  gulp.watch(['app/assets/images/**/*'], reload);
+  gulp.watch([appDirectory + '/**/*.html'], reload);
+  gulp.watch([appDirectory + '/assets/styles/**/*.{scss,css}'],
+    ['styles', reload]);
+  gulp.watch([appDirectory + '/assets/scripts/**/*.js'], ['jshint']);
+  gulp.watch([appDirectory + '/assets/images/**/*'], reload);
 });
 
 // Build and serve the output from the dist build

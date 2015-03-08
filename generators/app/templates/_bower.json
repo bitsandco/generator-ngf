@@ -5,7 +5,7 @@
   "ignore": [
     "**/.*",
     "node_modules",
-    "<%= directory %>/assets/bower_components",
+    "<%= appDir %>/assets/bower_components",
     "test",
     "tests"
   ],

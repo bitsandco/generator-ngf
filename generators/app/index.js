@@ -33,6 +33,9 @@
         this.options.dir = 'app';
       }
       
+      this.config.set('appDir', this.options.dir);
+      this.config.save();
+      
       this.composeWith('section', {
         args: JSON.parse(JSON.stringify(this.arguments)),
         options: JSON.parse(JSON.stringify(this.options))
@@ -48,11 +51,6 @@
       );
       
       this.fs.copy(
-        this.templatePath('_gulpfile.js'),
-        path.join(this.destinationRoot(), 'gulpfile.js')
-      );
-      
-      this.fs.copy(
         this.templatePath('_package.json'),
         path.join(this.destinationRoot(), 'package.json')
       );
@@ -63,17 +61,24 @@
       );
       
       this.fs.copyTpl(
+        this.templatePath('_gulpfile.js'),
+        path.join(this.destinationRoot(), 'gulpfile.js'), {
+          appDir: this.config.get('appDir')
+        }
+      );
+      
+      this.fs.copyTpl(
         this.templatePath('_bower.json'),
         path.join(this.destinationRoot(), 'bower.json'), {
           appname: format(this.name),
-          directory: path.relative(this.destinationRoot(), this.options.dir)
+          appDir: this.config.get('appDir')
         }
       );
       
       this.fs.copyTpl(
         this.templatePath('_.bowerrc'),
         path.join(this.destinationRoot(), '.bowerrc'), {
-          directory: path.relative(this.destinationRoot(), this.options.dir)
+          appDir: this.config.get('appDir')
         }
       );
     },

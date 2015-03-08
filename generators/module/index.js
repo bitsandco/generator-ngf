@@ -38,7 +38,7 @@
     
     install: function () {
       var
-        appPath = path.join(this.destinationRoot(), 'app'),
+        appPath = this._indexRoot(),
         fullPath = path.join(this.module.path,
           this.name,
           this.name + '.module.js');

@@ -21,12 +21,12 @@
   },
   "homepage": "https://github.com/bitsandco/generator-ngf",
   "dependencies": {
+    "blackhole": "^1.0.2",
     "ast-query": "^1.0.1",
     "cheerio": "^0.18.0",
     "yeoman-generator": "^0.18.10"
   },
   "devDependencies": {
-    "blackhole": "^1.0.2",
     "chai": "^1.10.0",
     "coveralls": "^2.11.2",
     "fs-extra": "^0.13.0",

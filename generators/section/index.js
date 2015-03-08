@@ -17,41 +17,50 @@
   'use strict';
 
   var
+    blackhole = require('blackhole'),
     NamedGenerator = require('../../util/NamedGenerator.js'),
     path = require('path');
     
   module.exports = NamedGenerator.extend({
-    constructor: function () {
-      NamedGenerator.apply(this, arguments);
-      
-      this._formatName(['-section', '-sec']);
-      
-      this.composeWith('module', {
-        args: this.arguments, options: this.options
-      }, {
-        local: path.join(__dirname, '../module')
-      });
-      
-      if (typeof this.options.dir === 'string') {
-        this.options.dir = path.join(this.options.dir, this.name);
-      } else {
-        this.options.dir = path.join(this.module.path, this.name);
-      }
-      if (typeof this.moduleName === 'string' && this.moduleName !== '') {
-          this.moduleName = this.module.name + '.';
-      } else {
-        this.moduleName = '';
-      }
-      this.moduleName += this.name;
-      
-      this.composeWith('controller', {
-        args: this.arguments, options: this.options
-      }, {
-        local: path.join(__dirname, '../controller')
-      });
-    },
-    
-    writing: function () {
-    }
+    constructor: SectionGenerator,
+    writing: blackhole
   });
+  
+  ////////////
+  
+  function SectionGenerator() {
+    var
+      dir, 
+      generator = this,
+      moduleName = '';
+    
+    NamedGenerator.apply(generator, arguments);
+  
+    generator._formatName(['-section', '-sec']);
+  
+    generator.composeWith('module', {
+      args: generator.arguments, options: generator.options
+    }, {
+      local: path.join(__dirname, '../module')
+    });
+  
+    if (typeof generator.options.dir === 'string') {
+      dir = generator.options.dir;
+    } else {
+      dir = generator.module.path;
+    }
+    generator.options.dir = path.join(dir, generator.name);
+    
+    if (typeof generator.moduleName === 'string' &&
+      generator.moduleName !== '') {
+        moduleName = generator.module.name + '.';
+    }
+    generator.moduleName = moduleName + generator.name;
+  
+    generator.composeWith('controller', {
+      args: generator.arguments, options: generator.options
+    }, {
+      local: path.join(__dirname, '../controller')
+    });
+  }
 }());

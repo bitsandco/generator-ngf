@@ -22,38 +22,66 @@
     path = require('path');
   
   module.exports = NamedGenerator.extend({
-    constructor: function () {
-      NamedGenerator.apply(this, arguments);
-      
-      this._formatName('-style');
-    },
-          
-    writing: function () {
-      this.fs.copyTpl(
-        this.templatePath('style.scss'),
-        path.join(this.module.path, '_' + this.name + '.scss'), {
-          cssClassName: this._getCssClassName(this.name)
-        }
-      );
-    },
-    
-    install: function () {
-      var
-        stylesPath = this._stylesRoot(),
-        fullPath = path.join(this.module.path, this.name);
-      
-      if (typeof stylesPath === 'string') {
-        this._appendStyle(path.relative(stylesPath, fullPath));
-      }
-    },
-    
-    _getCssClassName: function (style) {
-      style = style || this.name;
-      
-      style = this.module.name + '.' + style;
-      style = style.replace(/\./g, '-');
-      
-      return format(style);
-    }
+    constructor: StyleGenerator,
+    writing: copyTemplates,
+    install: appendScript
   });
+  
+  ////////////
+  
+  function StyleGenerator() {
+    var generator = this;
+    
+    NamedGenerator.apply(generator, arguments);
+    
+    generator._formatName('-style');
+  }
+  
+  function copyTemplates() {
+    /* jshint validthis: true */
+    
+    var
+      fullPath,
+      generator = this;
+    
+    fullPath = path.join(generator.module.path,
+      '_' + generator.name + '.scss');
+    
+    generator.fs.copyTpl(
+      generator.templatePath('style.scss'),
+      fullPath, {
+        cssClassName: getCssClassName(generator.name, generator)
+      }
+    );
+  }
+  
+  function appendScript() {
+    /* jshint validthis: true */
+    
+    var
+      fullPath,
+      generator = this,
+      stylesPath = generator._stylesRoot();
+    
+    fullPath = path.join(generator.module.path, generator.name);
+    
+    if (typeof stylesPath === 'string') {
+      generator._appendStyle(path.relative(stylesPath, fullPath));
+    }
+  }
+  
+  function getCssClassName(styleName, generator) {
+    if (typeof styleName !== 'string' && generator === undefined) {
+      generator = styleName;
+      styleName = undefined;
+    }
+    
+    styleName = styleName || generator.name;
+    
+    styleName = generator.module.name + '.' + styleName;
+    styleName = styleName.replace(/\./g, '-');
+    
+    return format(styleName);
+  }
+  
 }());

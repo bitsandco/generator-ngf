@@ -21,42 +21,65 @@
     path = require('path');
   
   module.exports = NamedGenerator.extend({
-    constructor: function () {
-      NamedGenerator.apply(this, arguments);
-      
-      this.option('no-view', { type: Boolean });
-      
-      this._formatName(['-controller', '-ctrl']);
-      
-      if (this.options['no-view'] !== true) {
-        this.composeWith('view', {
-          args: this.arguments, options: this.options
-        }, {
-          local: path.join(__dirname, '../view')
-        });
-      }
-    },
-          
-    writing: function () {
-      var fullPath = path.join(this.module.path, this.name + '.controller.js');
-      
-      this.fs.copyTpl(
-        this.templatePath('controller.js'),
-        fullPath, {
-          module: this.module.name,
-          name: this._.classify(this.name)
-        }
-      );
-    },
-    
-    install: function () {
-      var
-        appPath = this._indexRoot(),
-        fullPath = path.join(this.module.path, this.name + '.controller.js');
-      
-      if (typeof appPath === 'string') {
-        this._appendScript(path.relative(appPath, fullPath));
-      }
-    }
+    constructor: ControllerGenerator,
+    writing: copyTemplates,
+    install: appendScript
   });
+  
+  ////////////
+  
+  function ControllerGenerator() {
+    var generator = this;
+    
+    NamedGenerator.apply(generator, arguments);
+    
+    generator.option('no-view', { type: Boolean });
+    
+    generator._formatName(['-controller', '-ctrl']);
+    
+    if (generator.options['no-view'] !== true) {
+      generator.composeWith('view', {
+        args: generator.arguments, options: generator.options
+      }, {
+        local: path.join(__dirname, '../view')
+      });
+    }
+  }
+  
+  function copyTemplates() {
+    /* jshint validthis: true */
+    
+    var
+      fullPath,
+      generator = this;
+    
+    fullPath = path.join(generator.module.path,
+      generator.name + '.controller.js');
+    
+    generator.fs.copyTpl(
+      generator.templatePath('controller.js'),
+      fullPath, {
+        module: generator.module.name,
+        name: generator._.classify(generator.name)
+      }
+    );
+  }
+  
+  function appendScript() {
+    /* jshint validthis: true */
+    
+    var
+      appPath,
+      fullPath,
+      generator = this;
+      
+    appPath = generator._indexRoot();
+    fullPath = path.join(generator.module.path,
+      generator.name + '.controller.js');
+      
+    if (typeof appPath === 'string') {
+      generator._appendScript(path.relative(appPath, fullPath));
+    }
+  }
+  
 }());

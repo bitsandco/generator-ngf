@@ -22,38 +22,59 @@
     path = require('path');
   
   module.exports = NamedGenerator.extend({
-    constructor: function () {
-      NamedGenerator.apply(this, arguments);
-      
-      this.option('no-style', { type: Boolean });
-      
-      this._formatName('-view');
-      
-      if (this.options['no-style'] !== true) {
-        this.composeWith('style', {
-          args: this.arguments, options: this.options
-        }, {
-          local: path.join(__dirname, '../style')
-        });
-      }
-    },
-          
-    writing: function () {
-      this.fs.copyTpl(
-        this.templatePath('view.html'),
-        path.join(this.module.path, this.name + '.html'), {
-          cssClassName: this._getCssClassName(this.name)
-        }
-      );
-    },
-    
-    _getCssClassName: function (view) {
-      view = view || this.name;
-  
-      view = this.module.name + '.' + view;
-      view = view.replace(/\./g, '-');
-      
-      return format(view);
-    }
+    constructor: ViewGenerator,
+    writing: copyTemplates
   });
+  
+  ////////////
+  
+  function ViewGenerator() {
+    var generator = this;
+    
+    NamedGenerator.apply(generator, arguments);
+    
+    generator.option('no-style', { type: Boolean });
+    
+    generator._formatName('-view');
+    
+    if (generator.options['no-style'] !== true) {
+      generator.composeWith('style', {
+        args: generator.arguments, options: generator.options
+      }, {
+        local: path.join(__dirname, '../style')
+      });
+    }
+  }
+  
+  function copyTemplates() {
+    /* jshint validthis: true */
+    
+    var
+      fullPath,
+      generator = this;
+    
+    fullPath = path.join(generator.module.path, generator.name + '.html');
+    
+    generator.fs.copyTpl(
+      generator.templatePath('view.html'),
+      fullPath, {
+        cssClassName: getCssClassName(generator.name, generator)
+      }
+    );
+  }
+  
+  function getCssClassName(viewName, generator) {
+    if (typeof viewName !== 'string' && generator === undefined) {
+      generator = viewName;
+      viewName = undefined;
+    }
+    
+    viewName = viewName || generator.name;
+    
+    viewName = generator.module.name + '.' + viewName;
+    viewName = viewName.replace(/\./g, '-');
+    
+    return format(viewName);
+  }
+  
 }());

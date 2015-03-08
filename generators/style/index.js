@@ -58,6 +58,22 @@
         cssClassName: getCssClassName(generator.name, generator)
       }
     );
+    
+    ////////////
+    
+    function getCssClassName(styleName, generator) {
+      if (typeof styleName !== 'string' && generator === undefined) {
+        generator = styleName;
+        styleName = undefined;
+      }
+    
+      styleName = styleName || generator.name;
+    
+      styleName = generator.module.name + '.' + styleName;
+      styleName = styleName.replace(/\./g, '-');
+    
+      return format(styleName);
+    }
   }
   
   function appendScript() {
@@ -73,20 +89,6 @@
     if (typeof stylesPath === 'string') {
       generator._appendStyle(path.relative(stylesPath, fullPath));
     }
-  }
-  
-  function getCssClassName(styleName, generator) {
-    if (typeof styleName !== 'string' && generator === undefined) {
-      generator = styleName;
-      styleName = undefined;
-    }
-    
-    styleName = styleName || generator.name;
-    
-    styleName = generator.module.name + '.' + styleName;
-    styleName = styleName.replace(/\./g, '-');
-    
-    return format(styleName);
   }
   
 }());

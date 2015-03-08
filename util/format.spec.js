@@ -32,4 +32,5 @@
       format('toFormat').should.equal('to-format');
     });
   });
+  
 }());

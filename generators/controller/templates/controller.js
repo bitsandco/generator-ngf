@@ -12,4 +12,5 @@
   function <%= name %>() {
     var vm = this;
   }
+  
 }());

@@ -58,6 +58,23 @@
         name: getModuleName(generator.name, generator)
       }
     );
+    
+    ////////////
+    
+    function getModuleName(moduleName, generator) {
+      if (typeof moduleName !== 'string' && generator === undefined) {
+        generator = moduleName;
+        moduleName = undefined;
+      }
+    
+      moduleName = moduleName || generator.name;
+
+      if (generator.module.name !== '') {
+        moduleName = generator.module.name + '.' + moduleName;
+      }
+    
+      return moduleName;
+    }
   }
   
   function appendScript() {
@@ -76,21 +93,6 @@
     if (typeof appPath === 'string') {
       generator._appendScript(path.relative(appPath, fullPath));
     }
-  }
-  
-  function getModuleName(moduleName, generator) {
-    if (typeof moduleName !== 'string' && generator === undefined) {
-      generator = moduleName;
-      moduleName = undefined;
-    }
-    
-    moduleName = moduleName || generator.name;
-
-    if (generator.module.name !== '') {
-      moduleName = generator.module.name + '.' + moduleName;
-    }
-    
-    return moduleName;
   }
   
 }());

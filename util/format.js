@@ -18,20 +18,24 @@
   
   var _ = require('underscore.string');
   
-  module.exports = function (name, endings) {
+  module.exports = format;
+  
+  ////////////
+  
+  function format(name, endings) {
     var
       ending,
       i,
       l;
-    
+  
     endings = endings || '';
-    
+  
     if (typeof endings === 'string') {
       endings = [endings];
     }
-    
+  
     name = _.slugify(_.humanize(name));
-    
+  
     for (i = 0, l = endings.length; i < l; i += 1) {
       ending = endings[i];
       if (ending === '') {
@@ -40,7 +44,8 @@
         return name.slice(0, -ending.length);
       }
     }
-    
+  
     return name;
-  };
+  }
+  
 }());

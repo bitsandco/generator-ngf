@@ -73,7 +73,7 @@
     }
   }
   
-  function getModuleName (moduleName, generator) {
+  function getModuleName(moduleName, generator) {
     if (typeof moduleName !== 'string' && generator === undefined) {
       generator = moduleName;
       moduleName = undefined;
@@ -87,4 +87,5 @@
     
     return moduleName;
   }
+  
 }());

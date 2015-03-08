@@ -81,4 +81,5 @@
       generator._appendScript(path.relative(appPath, fullPath));
     }
   }
+  
 }());

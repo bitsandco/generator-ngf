@@ -106,4 +106,5 @@
       skipMessage: generator.options['skip-install']
     });
   }
+  
 }());

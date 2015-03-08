@@ -63,4 +63,5 @@
       local: path.join(__dirname, '../controller')
     });
   }
+  
 }());

@@ -21,41 +21,70 @@
     path = require('path');
   
   module.exports = NamedGenerator.extend({
-    constructor: function () {
-      NamedGenerator.apply(this, arguments);
-      
-      this._formatName(['-module', '-mod']);
-    },
-          
-    writing: function () {
-      this.fs.copyTpl(
-        this.templatePath('module.js'),
-        path.join(this.module.path, this.name, this.name + '.module.js'), {
-          name: this._getModuleName(this.name)
-        }
-      );
-    },
-    
-    install: function () {
-      var
-        appPath = this._indexRoot(),
-        fullPath = path.join(this.module.path,
-          this.name,
-          this.name + '.module.js');
-      
-      if (typeof appPath === 'string') {
-        this._appendScript(path.relative(appPath, fullPath));
-      }
-    },
-    
-    _getModuleName: function (module) {
-      module = module || this.name;
-  
-      if (this.module.name !== '') {
-        module = this.module.name + '.' + module;
-      }
-      
-      return module;
-    }
+    constructor: ModuleGenerator,
+    writing: copyTemplates,
+    install: appendScript
   });
+  
+  ////////////
+  
+  function ModuleGenerator() {
+    var generator = this;
+    
+    NamedGenerator.apply(generator, arguments);
+    
+    generator._formatName(['-module', '-mod']);
+  }
+  
+  function copyTemplates() {
+    /* jshint validthis: true */
+    
+    var
+      fullPath,
+      generator = this;
+    
+    fullPath = path.join(generator.module.path,
+      generator.name,
+      generator.name + '.module.js');
+    
+    generator.fs.copyTpl(
+      generator.templatePath('module.js'),
+      fullPath, {
+        name: getModuleName(generator.name, generator)
+      }
+    );
+  }
+  
+  function appendScript() {
+    /* jshint validthis: true */
+    
+    var
+      appPath,
+      fullPath,
+      generator = this;
+      
+    appPath = generator._indexRoot();
+    fullPath = path.join(generator.module.path,
+      generator.name,
+      generator.name + '.module.js');
+    
+    if (typeof appPath === 'string') {
+      generator._appendScript(path.relative(appPath, fullPath));
+    }
+  }
+  
+  function getModuleName (moduleName, generator) {
+    if (typeof moduleName !== 'string' && generator === undefined) {
+      generator = moduleName;
+      moduleName = undefined;
+    }
+    
+    moduleName = moduleName || generator.name;
+
+    if (generator.module.name !== '') {
+      moduleName = generator.module.name + '.' + moduleName;
+    }
+    
+    return moduleName;
+  }
 }());

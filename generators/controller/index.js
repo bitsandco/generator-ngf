@@ -73,12 +73,12 @@
       fullPath,
       generator = this;
       
-      appPath = generator._indexRoot();
-      fullPath = path.join(generator.module.path,
-        generator.name + '.controller.js');
+    appPath = generator._indexRoot();
+    fullPath = path.join(generator.module.path,
+      generator.name + '.controller.js');
       
-      if (typeof appPath === 'string') {
-        generator._appendScript(path.relative(appPath, fullPath));
-      }
+    if (typeof appPath === 'string') {
+      generator._appendScript(path.relative(appPath, fullPath));
     }
+  }
 }());

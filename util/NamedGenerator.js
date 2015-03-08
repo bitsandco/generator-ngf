@@ -43,6 +43,8 @@
         };
       }
       
+      generator.option('no-strip', { type: Boolean });
+      
       ////////////
       
       function parseModule() {

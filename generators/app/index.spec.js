@@ -27,7 +27,7 @@
   
   chai.should();
   
-  describe('ng:app', function() {
+  describe('ngf:app', function() {
     
     it('should generate a module app', function(done) {
       var context = runContext();
@@ -47,7 +47,7 @@
       var context = runContext();
       
       context
-        .withArguments(['myModModule'])
+        .withArguments(['myMod'])
         .on('end', function () {
           assert.file([path.join(
             __dirname,
@@ -68,4 +68,5 @@
         .withOptions({ 'skip-install': true });
     }
   });
+  
 }());

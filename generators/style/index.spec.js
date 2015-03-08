@@ -29,15 +29,20 @@
   
   chai.should();
   
-  describe('ng:style', function() {
+  describe('ngf:style', function() {
     
     it('should use the style name provided as argument' +
       ', stripping \'style\' at the end', function(done) {
-      checkNaming('myApp', 'Style', done);
+      checkNaming('myApp', 'Style', true, done);
     });
   
     it('should use the style name provided as argument', function(done) {
-      checkNaming('myApp', '', done);
+      checkNaming('myApp', '', true, done);
+    });
+  
+    it('should use the style name provided as argument' +
+      ', not stripping \'style\' at the end', function(done) {
+      checkNaming('myAppStyle', '', false, done);
     });
   
     it('should generate a style file', function(done) {
@@ -67,15 +72,17 @@
         .inDir(path.join(__dirname, '../../test/tmp', dir), setup);
     }
     
-    function checkNaming(name, suffix, done) {
+    function checkNaming(name, suffix, strip, done) {
       var context = runContext('ng_style' + name + suffix);
     
       context
         .withArguments([name + suffix])
+        .withOptions({ 'no-strip': !strip })
         .on('ready', function (generator) {
           expect(generator.name).to.equal(format(name));
           done();
         });
     }
   });
+  
 }());

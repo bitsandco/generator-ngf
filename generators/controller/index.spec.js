@@ -29,20 +29,25 @@
   
   chai.should();
   
-  describe('ng:controller', function() {
+  describe('ngf:controller', function() {
     
     it('should use the controller name provided as argument' +
       ', stripping \'controller\' at the end', function(done) {
-      checkNaming('myApp', 'Controller', done);
+      checkNaming('myApp', 'Controller', true, done);
     });
     
     it('should use the controller name provided as argument' +
       ', stripping \'ctrl\' at the end', function(done) {
-      checkNaming('my-app_', 'ctrl', done);
+      checkNaming('my-app_', 'ctrl', true, done);
     });
   
     it('should use the controller name provided as argument', function(done) {
-      checkNaming('myApp', '', done);
+      checkNaming('myApp', '', true, done);
+    });
+    
+    it('should use the controller name provided as argument' +
+      ', not stripping \'ctrl\' at the end', function(done) {
+      checkNaming('myAppCtrl', '', false, done);
     });
   
     it('should generate controller and view files', function(done) {
@@ -101,15 +106,17 @@
         .inDir(path.join(__dirname, '../../test/tmp', dir), setup);
     }
     
-    function checkNaming(name, suffix, done) {
+    function checkNaming(name, suffix, strip, done) {
       var context = runContext('ng_controller' + name + suffix);
     
       context
         .withArguments([name + suffix])
+        .withOptions({ 'no-strip': !strip })
         .on('ready', function (generator) {
           expect(generator.name).to.equal(format(name));
           done();
         });
     }
   });
+  
 }());

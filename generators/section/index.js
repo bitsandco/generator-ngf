@@ -32,12 +32,18 @@
     var
       dir, 
       generator = this,
-      moduleName = '';
+      moduleName = '',
+      suffix;
     
     NamedGenerator.apply(generator, arguments);
   
-    generator._formatName(['-section', '-sec']);
+    if (generator.options['no-strip'] !== true) {
+      suffix = ['-section', '-sec'];
+    }
+    generator._formatName(suffix);
   
+    generator.options['no-strip'] = true;
+    
     generator.composeWith('module', {
       args: generator.arguments, options: generator.options
     }, {

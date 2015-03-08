@@ -43,7 +43,9 @@
           this.name,
           this.name + '.module.js');
       
-      this._appendScript(path.relative(appPath, fullPath));
+      if (typeof appPath === 'string') {
+        this._appendScript(path.relative(appPath, fullPath));
+      }
     },
     
     _getModuleName: function (module) {

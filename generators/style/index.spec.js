@@ -48,7 +48,7 @@
       context
         .withArguments(['myApp'])
         .on('ready', function (generator) {
-          file = generator.name + '.scss';
+          file = '_' + generator.name + '.scss';
         })
         .on('end', function () {
           assert.file([path.join(__dirname, '../../test/tmp/context', file)]);

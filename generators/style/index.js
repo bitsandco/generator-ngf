@@ -42,7 +42,9 @@
         stylesPath = this._stylesRoot(),
         fullPath = path.join(this.module.path, this.name);
       
-      this._appendStyle(path.relative(stylesPath, fullPath));
+      if (typeof stylesPath === 'string') {
+        this._appendStyle(path.relative(stylesPath, fullPath));
+      }
     },
     
     _getCssClassName: function (style) {

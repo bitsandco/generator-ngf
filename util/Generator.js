@@ -36,8 +36,10 @@
   ////////////
   
   function Generator() {
-    generators.Base.apply(this, arguments);
-    this.option('dir', { type: String });
+    var generator = this;
+    
+    generators.Base.apply(generator, arguments);
+    generator.option('dir', { type: String });
   }
   
   function appendScript(scriptPath) {
@@ -123,14 +125,34 @@
   
   function indexRoot() {
     /* jshint validthis: true */
-    return path.join(this.destinationRoot(), this.config.get('appDir'));
+    var
+      appDir,
+      generator = this;
+    
+    appDir = generator.config.get('appDir');
+    
+    if (typeof appDir === 'string') {
+      appDir = path.join(generator.destinationRoot(), appDir);
+    }
+    
+    return appDir;
   }
   
   function stylesRoot() {
     /* jshint validthis: true */
-    return path.join(this.destinationRoot(),
-      this.config.get('appDir'),
-      'assets',
-      'styles');
+    var
+      appDir,
+      generator = this,
+      stylesDir;
+    
+    appDir = generator._indexRoot();
+
+    if (typeof appDir === 'string') {
+      stylesDir = path.join(appDir,
+        'assets',
+        'styles');
+    }
+    
+    return stylesDir;
   }
 }());

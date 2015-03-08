@@ -54,7 +54,9 @@
         appPath = this._indexRoot(),
         fullPath = path.join(this.module.path, this.name + '.controller.js');
       
-      this._appendScript(path.relative(appPath, fullPath));
+      if (typeof appPath === 'string') {
+        this._appendScript(path.relative(appPath, fullPath));
+      }
     }
   });
 }());

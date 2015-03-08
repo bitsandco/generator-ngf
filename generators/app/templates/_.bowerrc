@@ -1,3 +1,3 @@
 {
-  "directory": "<%= directory %>/assets/bower_components"
+  "directory": "<%= appDir %>/assets/bower_components"
 }

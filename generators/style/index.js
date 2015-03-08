@@ -31,10 +31,20 @@
     writing: function () {
       this.fs.copyTpl(
         this.templatePath('style.scss'),
-        path.join('_' + this.module.path, this.name + '.scss'), {
+        path.join(this.module.path, '_' + this.name + '.scss'), {
           cssClassName: this._getCssClassName(this.name)
         }
       );
+    },
+    
+    install: function () {
+      var
+        stylesPath = this._stylesRoot(),
+        fullPath = path.join(this.module.path, this.name);
+      
+      if (typeof stylesPath === 'string') {
+        this._appendStyle(path.relative(stylesPath, fullPath));
+      }
     },
     
     _getCssClassName: function (style) {

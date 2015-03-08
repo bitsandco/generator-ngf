@@ -50,7 +50,7 @@
         .withArguments(['myAppView'])
         .on('ready', function (generator) {
           viewFile = generator.name + '.html';
-		      styleFile = generator.name + '.scss';
+		      styleFile = '_' + generator.name + '.scss';
         })
         .on('end', function () {
           assert.file([

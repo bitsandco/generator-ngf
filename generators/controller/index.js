@@ -38,13 +38,25 @@
     },
           
     writing: function () {
+      var fullPath = path.join(this.module.path, this.name + '.controller.js');
+      
       this.fs.copyTpl(
         this.templatePath('controller.js'),
-        path.join(this.module.path, this.name + '.controller.js'), {
+        fullPath, {
           module: this.module.name,
           name: this._.classify(this.name)
         }
       );
+    },
+    
+    install: function () {
+      var
+        appPath = this._indexRoot(),
+        fullPath = path.join(this.module.path, this.name + '.controller.js');
+      
+      if (typeof appPath === 'string') {
+        this._appendScript(path.relative(appPath, fullPath));
+      }
     }
   });
 }());

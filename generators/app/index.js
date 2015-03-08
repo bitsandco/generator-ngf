@@ -21,73 +21,89 @@
       path = require('path');
     
   module.exports = Generator.extend({
-    constructor: function () {
-      Generator.apply(this, arguments);
-      
-      this.argument('name', { type: String, required: false });
-      if (typeof this.name !== 'string') {
-        this.name = 'app';
-      }
-      
-      if (typeof this.options.dir !== 'string') {
-        this.options.dir = 'app';
-      }
-      
-      this.config.set('appDir', this.options.dir);
-      this.config.save();
-      
-      this.composeWith('section', {
-        args: JSON.parse(JSON.stringify(this.arguments)),
-        options: JSON.parse(JSON.stringify(this.options))
-      }, {
-        local: path.join(__dirname, '../section')
-      });
-    },
-    
-    writing: function () {
-      this.directory(
-        this.templatePath('app'),
-        path.join(this.destinationRoot(), this.options.dir)
-      );
-      
-      this.fs.copy(
-        this.templatePath('_package.json'),
-        path.join(this.destinationRoot(), 'package.json')
-      );
-      
-      this.fs.copy(
-        this.templatePath('README.md'),
-        path.join(this.destinationRoot(), 'README.md')
-      );
-      
-      this.fs.copyTpl(
-        this.templatePath('_gulpfile.js'),
-        path.join(this.destinationRoot(), 'gulpfile.js'), {
-          appDir: this.config.get('appDir')
-        }
-      );
-      
-      this.fs.copyTpl(
-        this.templatePath('_bower.json'),
-        path.join(this.destinationRoot(), 'bower.json'), {
-          appname: format(this.name),
-          appDir: this.config.get('appDir')
-        }
-      );
-      
-      this.fs.copyTpl(
-        this.templatePath('_.bowerrc'),
-        path.join(this.destinationRoot(), '.bowerrc'), {
-          appDir: this.config.get('appDir')
-        }
-      );
-    },
-    
-    install: function () {
-      this.installDependencies({
-        skipInstall: this.options['skip-install'],
-        skipMessage: this.options['skip-install']
-      });
-    }
+    constructor: AppGenerator,
+    writing: copyTemplates,
+    install: installDependencies
   });
+  
+  ////////////
+  
+  function AppGenerator() {
+    var generator = this;
+    
+    Generator.apply(generator, arguments);
+    
+    generator.argument('name', { type: String, required: false });
+    if (typeof generator.name !== 'string') {
+      this.name = 'app';
+    }
+    
+    if (typeof generator.options.dir !== 'string') {
+      generator.options.dir = 'app';
+    }
+    
+    generator.config.set('appDir', generator.options.dir);
+    generator.config.save();
+    
+    generator.composeWith('section', {
+      args: JSON.parse(JSON.stringify(generator.arguments)),
+      options: JSON.parse(JSON.stringify(generator.options))
+    }, {
+      local: path.join(__dirname, '../section')
+    });
+  }
+  
+  function copyTemplates() {
+    /* jshint validthis: true */
+    
+    var generator = this;
+    
+    generator.directory(
+      generator.templatePath('app'),
+      path.join(generator.destinationRoot(), generator.options.dir)
+    );
+  
+    generator.fs.copy(
+      generator.templatePath('_package.json'),
+      path.join(generator.destinationRoot(), 'package.json')
+    );
+  
+    generator.fs.copy(
+      generator.templatePath('README.md'),
+      path.join(generator.destinationRoot(), 'README.md')
+    );
+  
+    generator.fs.copyTpl(
+      generator.templatePath('_gulpfile.js'),
+      path.join(generator.destinationRoot(), 'gulpfile.js'), {
+        appDir: generator.config.get('appDir')
+      }
+    );
+  
+    generator.fs.copyTpl(
+      generator.templatePath('_bower.json'),
+      path.join(generator.destinationRoot(), 'bower.json'), {
+        appname: format(generator.name),
+        appDir: generator.config.get('appDir')
+      }
+    );
+  
+    generator.fs.copyTpl(
+      generator.templatePath('_.bowerrc'),
+      path.join(generator.destinationRoot(), '.bowerrc'), {
+        appDir: generator.config.get('appDir')
+      }
+    );
+  }
+  
+  function installDependencies() {
+    /* jshint validthis: true */
+    
+    var generator = this;
+    
+    generator.installDependencies({
+      skipInstall: generator.options['skip-install'],
+      skipMessage: generator.options['skip-install']
+    });
+  }
 }());

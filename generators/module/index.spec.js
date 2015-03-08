@@ -30,22 +30,27 @@
   
   chai.should();
   
-  describe('ng:module', function() {
+  describe('ngf:module', function() {
     
     it('should use the module name provided as argument' +
       ', stripping \'module\' at the end', function(done) {
-      checkNaming('myApp', 'Module', done);
+      checkNaming('myApp', 'Module', true, done);
     });
     
     it('should use the module name provided as argument' +
       ', stripping \'mod\' at the end', function(done) {
-      checkNaming('my-app_', 'mod', done);
+      checkNaming('my-app_', 'mod', true, done);
     });
   
     it('should use the module name provided as argument', function(done) {
-      checkNaming('myApp', '', done);
+      checkNaming('myApp', '', true, done);
     });
     
+    it('should use the module name provided as argument' +
+      ', not stripping \'mod\' at the end', function(done) {
+      checkNaming('my-app_mod', '', false, done);
+    });
+  
     it('should accept an optional argument ' +
       'for the parent module', function(done) {
       var context = runContext('template');
@@ -186,11 +191,12 @@
         .inDir(path.join(__dirname, '../../test/tmp', dir), setup);
     }
     
-    function checkNaming(name, suffix, done) {
+    function checkNaming(name, suffix, strip, done) {
       var context = runContext('ng_module' + name + suffix);
     
       context
         .withArguments([name + suffix])
+        .withOptions({ 'no-strip': !strip })
         .on('ready', function (generator) {
           expect(generator.name).to.equal(format(name));
           expect(generator.module.name).to.equal('');
@@ -198,4 +204,5 @@
         });
     }
   });
+  
 }());

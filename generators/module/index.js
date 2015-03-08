@@ -29,11 +29,16 @@
   ////////////
   
   function ModuleGenerator() {
-    var generator = this;
+    var
+      generator = this,
+      suffix;
     
     NamedGenerator.apply(generator, arguments);
     
-    generator._formatName(['-module', '-mod']);
+    if (generator.options['no-strip'] !== true) {
+      suffix = ['-module', '-mod'];
+    }
+    generator._formatName(suffix);
   }
   
   function copyTemplates() {

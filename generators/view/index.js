@@ -29,13 +29,18 @@
   ////////////
   
   function ViewGenerator() {
-    var generator = this;
+    var
+      generator = this,
+      suffix;
     
     NamedGenerator.apply(generator, arguments);
     
     generator.option('no-style', { type: Boolean });
     
-    generator._formatName('-view');
+    if (generator.options['no-strip'] !== true) {
+      suffix = '-view';
+    }
+    generator._formatName(suffix);
     
     if (generator.options['no-style'] !== true) {
       generator.composeWith('style', {

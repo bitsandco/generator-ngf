@@ -29,13 +29,18 @@
   ////////////
   
   function ControllerGenerator() {
-    var generator = this;
+    var
+      generator = this,
+      suffix;
     
     NamedGenerator.apply(generator, arguments);
     
     generator.option('no-view', { type: Boolean });
     
-    generator._formatName(['-controller', '-ctrl']);
+    if (generator.options['no-strip'] !== true) {
+      suffix = ['-controller', '-ctrl'];
+    }
+    generator._formatName(suffix);
     
     if (generator.options['no-view'] !== true) {
       generator.composeWith('view', {

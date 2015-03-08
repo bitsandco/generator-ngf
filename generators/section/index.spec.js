@@ -29,20 +29,25 @@
   
   chai.should();
   
-  describe('ng:section', function() {
+  describe('ngf:section', function() {
     
     it('should use the section name provided as argument' +
       ', stripping \'section\' at the end', function(done) {
-      checkNaming('myApp', 'Section', done);
+      checkNaming('myApp', 'Section', true, done);
     });
     
     it('should use the section name provided as argument' +
       ', stripping \'sec\' at the end', function(done) {
-      checkNaming('my-app_', 'sec', done);
+      checkNaming('my-app_', 'sec', true, done);
     });
   
     it('should use the section name provided as argument', function(done) {
-      checkNaming('myApp', '', done);
+      checkNaming('myApp', '', true, done);
+    });
+    
+    it('should use the section name provided as argument' +
+      ', not stripping \'section\' at the end', function(done) {
+      checkNaming('myAppSection', '', false, done);
     });
     
     it('should generate a style file', function(done) {
@@ -113,11 +118,12 @@
         .inDir(path.join(__dirname, '../../test/tmp', dir), setup);
     }
     
-    function checkNaming(name, suffix, done) {
+    function checkNaming(name, suffix, strip, done) {
       var context = runContext('ng_section' + name + suffix);
     
       context
         .withArguments([name + suffix])
+        .withOptions({ 'no-strip': !strip })
         .on('ready', function (generator) {
           expect(generator.name).to.equal(format(name));
           expect(generator.module.name).to.equal('');
@@ -125,4 +131,5 @@
         });
     }
   });
+  
 }());

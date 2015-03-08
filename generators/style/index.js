@@ -30,11 +30,16 @@
   ////////////
   
   function StyleGenerator() {
-    var generator = this;
+    var
+      generator = this,
+      suffix;
     
     NamedGenerator.apply(generator, arguments);
     
-    generator._formatName('-style');
+    if (generator.options['no-strip'] !== true) {
+      suffix = '-style';
+    }
+    generator._formatName(suffix);
   }
   
   function copyTemplates() {

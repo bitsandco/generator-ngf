@@ -33,13 +33,18 @@
     
     it('should use the view name provided as argument' +
       ', stripping \'view\' at the end', function(done) {
-      checkNaming('myApp', 'View', done);
+      checkNaming('myApp', 'View', true, done);
     });
   
     it('should use the view name provided as argument', function(done) {
-      checkNaming('myApp', '', done);
+      checkNaming('myApp', '', true, done);
     });
-  
+    
+    it('should use the view name provided as argument' +
+      ', not stripping \'view\' at the end', function(done) {
+      checkNaming('myAppView', '', false, done);
+    });
+    
     it('should generate view and style files', function(done) {
       var
         context = runContext(),
@@ -96,15 +101,17 @@
         .inDir(path.join(__dirname, '../../test/tmp', dir), setup);
     }
     
-    function checkNaming(name, suffix, done) {
+    function checkNaming(name, suffix, strip, done) {
       var context = runContext('ng_view' + name + suffix);
     
       context
         .withArguments([name + suffix])
+        .withOptions({ 'no-strip': !strip })
         .on('ready', function (generator) {
           expect(generator.name).to.equal(format(name));
           done();
         });
     }
   });
+  
 }());

@@ -29,7 +29,7 @@
   
   chai.should();
   
-  describe('ng:view', function() {
+  describe('ngf:view', function() {
     
     it('should use the view name provided as argument' +
       ', stripping \'view\' at the end', function(done) {

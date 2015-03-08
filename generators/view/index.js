@@ -66,20 +66,22 @@
         cssClassName: getCssClassName(generator.name, generator)
       }
     );
-  }
-  
-  function getCssClassName(viewName, generator) {
-    if (typeof viewName !== 'string' && generator === undefined) {
-      generator = viewName;
-      viewName = undefined;
+    
+    ////////////
+    
+    function getCssClassName(viewName, generator) {
+      if (typeof viewName !== 'string' && generator === undefined) {
+        generator = viewName;
+        viewName = undefined;
+      }
+    
+      viewName = viewName || generator.name;
+    
+      viewName = generator.module.name + '.' + viewName;
+      viewName = viewName.replace(/\./g, '-');
+    
+      return format(viewName);
     }
-    
-    viewName = viewName || generator.name;
-    
-    viewName = generator.module.name + '.' + viewName;
-    viewName = viewName.replace(/\./g, '-');
-    
-    return format(viewName);
   }
   
 }());

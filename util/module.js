@@ -20,7 +20,11 @@
     fs = require('fs'),
     program = require('ast-query');
   
-  exports.findModules = function (filename) {
+  exports.findModulesInFile = findModulesInFile;
+  
+  ////////////
+  
+  function findModulesInFile(filename) {
     var
       argumentList,
       expression,
@@ -29,23 +33,24 @@
       l,
       modules = [],
       tree;
-  
+
     if (fs.existsSync(filename)) {
       tree = program(fs.readFileSync(filename));
       expressions = tree.callExpression('angular.module');
-    
+  
       for (i = 0, l = expressions.length; i < l; i += 1) {
         expression = expressions.nodes[i];
         argumentList = expression.arguments;
-        
+      
         if (argumentList.length > 1 && argumentList[0].type === 'Literal') {
           modules.push({ name: argumentList[0].value });
         }
       }
-      
+    
       return modules;
     } else {
       return null;
     }
-  };
+  }
+  
 }());

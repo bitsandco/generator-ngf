@@ -27,9 +27,10 @@
   describe('module', function() {
     
     it('should return null when the file is not found', function() {
-      expect(module.findModules(
+      expect(module.findModulesInFile(
         path.join(__dirname, 'modules.js')
       )).to.be.null();
     });
   });
+  
 }());

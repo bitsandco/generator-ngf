@@ -26,125 +26,135 @@
     };
     
   module.exports = Generator.extend({
-    constructor: function () {
-      var generator = this;
+    constructor: NamedGenerator,
+    _formatName: formatName
+  });
+  
+  ////////////
+  
+  function NamedGenerator() {
+    var generator = this;
+  
+    Generator.apply(generator, arguments);
+  
+    generator.argument('name', { type: String, required: true });
+  
+    generator.argument('moduleName', { type: String, required: false });
+    if (typeof generator.moduleName === 'string') {
+      parseModule();
+    } else {
+      generator.module = {
+        name: '',
+        path: generator.options.dir || generator.destinationRoot()
+      };
+    }
+  
+    generator.option('no-strip', { type: Boolean });
+  
+    ////////////
+  
+    function parseModule() {
+      var
+        filename = getModuleFilename(generator.moduleName),
+        i,
+        l,
+        module,
+        moduleName,
+        modules;
       
-      Generator.apply(this, arguments);
+      if (!fs.existsSync(filename)) {
+        filename = findModulePath(generator.moduleName);
       
-      this.argument('name', { type: String, required: true });
-      
-      this.argument('moduleName', { type: String, required: false });
-      if (typeof this.moduleName === 'string') {
-        parseModule();
-      } else {
-        this.module = {
-          name: '',
-          path: this.options.dir || this.destinationRoot()
+        module = {
+          name: generator.moduleName,
+          path: generator.options.dir || path.dirname(filename)
         };
-      }
+      } else {
+        moduleName = path.basename(generator.moduleName);
       
-      generator.option('no-strip', { type: Boolean });
-      
-      ////////////
-      
-      function parseModule() {
-        var
-          filename = getModuleFilename(generator.moduleName),
-          i,
-          l,
-          module,
-          moduleName,
-          modules;
-          
-        if (!fs.existsSync(filename)) {
-          filename = findModule(generator.moduleName);
-          
-          module = {
-            name: generator.moduleName,
-            path: generator.options.dir || path.dirname(filename)
-          };
-        } else {
-          moduleName = path.basename(generator.moduleName);
-          
-          modules = util.module.findModules(filename);
-        
-          for (i = 0, l = modules.length;
-            i < l && module === undefined;
-            i += 1) {
-            if (generator._.endsWith(modules[i].name, moduleName)) {
-              module = {
-                name: modules[i].name,
-                path: generator.options.dir || path.dirname(filename)
-              };
-            }
-          }
-        }
-        
-        generator.module = module;
-        
-        ////////////
-        
-        function getModuleFilename (moduleRoot) {
-          return path.join(
-            generator.destinationRoot(),
-            moduleRoot,
-            path.basename(moduleRoot) + '.module.js'
-          );
-        }
-        
-        function findModule (moduleName) {
-          var
-            file,
-            files = [generator.destinationRoot()],
-            i,
-            l,
-            modulePathName,
-            modules,
-            stats;
-          
-          while (files.length > 0) {
-            file = files.shift();
-            
-            stats = fs.statSync(file);
-            if (stats.isDirectory()) {
-              files = files.concat(fs.readdirSync(file).map(fullPath(file)));
-            } else if (generator._.endsWith(
-              path.basename(file),
-              '.module.js'
-            )) {
-              modules = util.module.findModules(file);
-              
-              for (i = 0, l = modules.length; i < l; i += 1) {
-                if (modules[i].name === moduleName) {
-                  return file;
-                }
-              }
-            }
-          }
-          
-          modulePathName = moduleName.replace(/\./g, path.sep);
-          moduleName = moduleName.split('.');
-          moduleName = moduleName[moduleName.length - 1];
-          
-          return path.join(
-            generator.destinationRoot(),
-            modulePathName,
-            moduleName +  '.module.js'
-          );
-          
-          ////////////
-          
-          function fullPath(file) {
-            return function (f) {
-              return path.join(file, f);
+        modules = util.module.findModulesInFile(filename);
+    
+        for (i = 0, l = modules.length;
+          i < l && module === undefined;
+          i += 1) {
+          if (generator._.endsWith(modules[i].name, moduleName)) {
+            module = {
+              name: modules[i].name,
+              path: generator.options.dir || path.dirname(filename)
             };
           }
         }
       }
-    },
     
-    _formatName: function (suffix) {
-      this.name = util.format(this.name, suffix);
+      generator.module = module;
+    
+      ////////////
+    
+      function getModuleFilename(moduleRoot) {
+        return path.join(
+          generator.destinationRoot(),
+          moduleRoot,
+          path.basename(moduleRoot) + '.module.js'
+        );
+      }
+    
+      function findModulePath(moduleName) {
+        var
+          file,
+          files = [generator.destinationRoot()],
+          i,
+          l,
+          modulePathName,
+          modules,
+          stats;
+      
+        while (files.length > 0) {
+          file = files.shift();
+        
+          stats = fs.statSync(file);
+          if (stats.isDirectory()) {
+            files = files.concat(fs.readdirSync(file).map(fullPath(file)));
+          } else if (generator._.endsWith(
+            path.basename(file),
+            '.module.js'
+          )) {
+            modules = util.module.findModulesInFile(file);
+          
+            for (i = 0, l = modules.length; i < l; i += 1) {
+              if (modules[i].name === moduleName) {
+                return file;
+              }
+            }
+          }
+        }
+      
+        modulePathName = moduleName.replace(/\./g, path.sep);
+        moduleName = moduleName.split('.');
+        moduleName = moduleName[moduleName.length - 1];
+      
+        return path.join(
+          generator.destinationRoot(),
+          modulePathName,
+          moduleName +  '.module.js'
+        );
+      
+        ////////////
+      
+        function fullPath(file) {
+          return function (f) {
+            return path.join(file, f);
+          };
+        }
+      }
     }
-  });
+  }
+  
+  function formatName(suffix) {
+    /* jshint validthis: true */
+    
+    var generator = this;
+    
+    generator.name = util.format(generator.name, suffix);
+  }
+  
 }());

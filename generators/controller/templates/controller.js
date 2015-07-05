@@ -1,3 +1,8 @@
+/**
+ * <%= name %> Controller
+ * @namespace Controllers
+ * @memberOf Modules.<%= module %>
+ */
 (function () {
   'use strict';
   
@@ -9,6 +14,11 @@
   
   ////////////
   
+  /**
+   * @namespace <%= name %>
+   * @desc
+   * @memberOf Controllers
+   */
   function <%= name %>() {
     var vm = this;
   }

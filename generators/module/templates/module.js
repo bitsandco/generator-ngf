@@ -1,3 +1,7 @@
+/**
+ * <%= name %> Module
+ * @namespace Modules
+ */
 (function () {
   'use strict';
   

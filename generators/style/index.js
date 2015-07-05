@@ -84,7 +84,7 @@
       generator = this,
       stylesPath = generator._stylesRoot();
     
-    fullPath = path.join(generator.module.path, generator.name);
+    fullPath = path.join(generator.module.path, '_' + generator.name);
     
     if (typeof stylesPath === 'string') {
       generator._appendStyle(path.relative(stylesPath, fullPath));
